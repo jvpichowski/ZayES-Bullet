@@ -8,10 +8,10 @@ import com.jme3.bullet.debug.BulletDebugAppState;
 import com.jme3.math.Plane;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import com.jvpichowski.jme3.es.bullet.CollisionShapeComponent;
-import com.jvpichowski.jme3.es.bullet.PhysicsForceComponent;
-import com.jvpichowski.jme3.es.bullet.PhysicsPositionComponent;
-import com.jvpichowski.jme3.es.bullet.PhysicsRigidBodyComponent;
+import com.jvpichowski.jme3.es.bullet.components.CollisionShape;
+import com.jvpichowski.jme3.es.bullet.components.Force;
+import com.jvpichowski.jme3.es.bullet.components.PhysicsPosition;
+import com.jvpichowski.jme3.es.bullet.components.RigidBody;
 import com.jvpichowski.jme3.states.ESBulletState;
 import com.simsilica.es.EntityData;
 import com.simsilica.es.EntityId;
@@ -41,24 +41,24 @@ public class ESBulletExample extends SimpleApplication {
         //Add some entities
         EntityId plane = entityData.createEntity();
         entityData.setComponents(plane,
-                new PhysicsPositionComponent(new Vector3f(), Quaternion.DIRECTION_Z.clone()),
-                new PhysicsRigidBodyComponent(false, 0),
-                new CollisionShapeComponent(new PlaneCollisionShape(new Plane(Vector3f.UNIT_Y.clone(), 0))));
+                new PhysicsPosition(new Vector3f(), Quaternion.DIRECTION_Z.clone()),
+                new RigidBody(false, 0),
+                new CollisionShape(new PlaneCollisionShape(new Plane(Vector3f.UNIT_Y.clone(), 0))));
 
         EntityId box = entityData.createEntity();
         entityData.setComponents(box,
-                new PhysicsPositionComponent(new Vector3f(0,10,0), Quaternion.DIRECTION_Z.clone()),
-                new PhysicsRigidBodyComponent(false, 10),
-                new CollisionShapeComponent(new BoxCollisionShape(new Vector3f(0.5f,0.5f,0.5f))));
+                new PhysicsPosition(new Vector3f(0,10,0), Quaternion.DIRECTION_Z.clone()),
+                new RigidBody(false, 10),
+                new CollisionShape(new BoxCollisionShape(new Vector3f(0.5f,0.5f,0.5f))));
 
         EntityId box2 = entityData.createEntity();
         entityData.setComponents(box2,
-                new PhysicsPositionComponent(new Vector3f(0,0,0), Quaternion.DIRECTION_Z.clone()),
-                new PhysicsRigidBodyComponent(false, 0),
-                new CollisionShapeComponent(new BoxCollisionShape(new Vector3f(0.5f,0.5f,0.5f))));
+                new PhysicsPosition(new Vector3f(0,0,0), Quaternion.DIRECTION_Z.clone()),
+                new RigidBody(false, 0),
+                new CollisionShape(new BoxCollisionShape(new Vector3f(0.5f,0.5f,0.5f))));
 
         //uncomment this line and notice the difference
-        //entityData.setComponent(box, new PhysicsForceComponent(new Vector3f(100,100,100), new Vector3f()));
+        //entityData.setComponent(box, new Force(new Vector3f(100,100,100), new Vector3f()));
     }
 
     @Override

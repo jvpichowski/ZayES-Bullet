@@ -1,4 +1,4 @@
-package com.jvpichowski.jme3.es.bullet;
+package com.jvpichowski.jme3.es.bullet.components;
 
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
@@ -7,17 +7,17 @@ import com.simsilica.es.EntityComponent;
 /**
  * Created by Jan on 30.01.2017.
  */
-public class PhysicsPositionComponent implements EntityComponent {
+public class PhysicsPosition implements EntityComponent {
 
     private Quaternion rotation;
     private Vector3f location;
 
-    public PhysicsPositionComponent(Vector3f location, Quaternion rotation) {
+    public PhysicsPosition(Vector3f location, Quaternion rotation) {
         this.rotation = rotation;
         this.location = location;
     }
 
-    public PhysicsPositionComponent() {
+    public PhysicsPosition() {
     }
 
     public Quaternion getRotation() {

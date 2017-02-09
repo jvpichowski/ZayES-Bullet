@@ -4,6 +4,10 @@ import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.PhysicsTickListener;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
+import com.jvpichowski.jme3.es.bullet.components.Force;
+import com.jvpichowski.jme3.es.bullet.components.ForceController;
+import com.jvpichowski.jme3.es.bullet.components.LinearVelocityController;
+import com.jvpichowski.jme3.es.bullet.components.PhysicsPositionController;
 import com.simsilica.es.*;
 
 
@@ -19,26 +23,46 @@ public final class BulletSystem implements PhysicsTickListener{
     private EntityData entityData = null;
 
     private EntityContainer<PhysicsRigidBody> rigidBodies;
-    private EntitySet positionComponents;
+    private PhysicsController[] controllers;
 
-    private EntitySet forces;
+    private static PhysicsController[] defaultControllers(){
+        return new PhysicsController[]{
+                new PhysicsPositionController(),
+                new LinearVelocityController(),
+                new ForceController()
+        };
+    }
 
-    public BulletSystem(EntityData entityData){
+    /**
+     *
+     * @param entityData
+     * @param controllers the controllers which should change the physics state.
+     *                    If no controllers are given the default controllers will be added.
+     */
+    public BulletSystem(EntityData entityData, PhysicsController... controllers){
         this(entityData,
                 new Vector3f(-10000f, -10000f, -10000f),
                 new Vector3f(10000f, 10000f, 10000f),
-                PhysicsSpace.BroadphaseType.DBVT);
+                PhysicsSpace.BroadphaseType.DBVT, controllers);
     }
 
-    public BulletSystem(EntityData entityData, Vector3f worldMin, Vector3f worldMax, PhysicsSpace.BroadphaseType broadphaseType){
+    public BulletSystem(EntityData entityData, Vector3f worldMin, Vector3f worldMax, PhysicsSpace.BroadphaseType broadphaseType, PhysicsController... controllers){
         this.entityData = entityData;
         this.broadphaseType = broadphaseType;
         this.worldMin = worldMin;
         this.worldMax = worldMax;
-        positionComponents = entityData.getEntities(PhysicsPositionComponent.class);
-        forces = entityData.getEntities(PhysicsForceComponent.class);
-        rigidBodies = new RigidBodyContainer(entityData);
+        if(controllers.length == 0){
+            this.controllers = defaultControllers();
+        }else{
+            this.controllers = controllers;
+        }
+
         physicsSpace = new PhysicsSpace(worldMin, worldMax, broadphaseType);
+        rigidBodies = new RigidBodyContainer(entityData, physicsSpace);
+        for(PhysicsController controller : this.controllers){
+            controller.initialize(entityData, rigidBodies);
+        }
+
         physicsSpace.addTickListener(this);
         rigidBodies.start();
 
@@ -60,7 +84,9 @@ public final class BulletSystem implements PhysicsTickListener{
     public void destroy(){
         physicsSpace.removeTickListener(this);
         rigidBodies.stop();
-        positionComponents.release();
+        for(PhysicsController controller : controllers){
+            controller.destroy();
+        }
         physicsSpace.destroy();
         physicsSpace = null;
     }
@@ -73,92 +99,39 @@ public final class BulletSystem implements PhysicsTickListener{
         return physicsSpace;
     }
 
+
+    /**
+     * DO NOT CALL
+     *
+     * @param space
+     * @param tpf
+     */
     @Override
     public void prePhysicsTick(PhysicsSpace space, float tpf) {
         //update rigid bodies
         rigidBodies.update();
         //copy position to physics
-        applyPhysicsPositions();
-        //apply force
-        applyForces();
-    }
-
-    @Override
-    public void physicsTick(PhysicsSpace space, float tpf) {
-        //copy position to es
-        physicsSpace.getRigidBodyList().forEach(rigidBody ->
-            entityData.setComponent((EntityId)rigidBody.getUserObject(),
-                    new PhysicsPositionComponent(rigidBody.getPhysicsLocation(), rigidBody.getPhysicsRotation())));
-
-        //safe changes to know at the next call which are updated by the user
-        //positionComponents.applyChanges(); //not good because of multithreading
+        for(PhysicsController controller : controllers){
+            controller.prePhysicsTick(space, tpf);
+        }
     }
 
     /**
-     * forwards the user changes to the physics engine
+     * DO NOT CALL
+     *
+     * @param space
+     * @param tpf
      */
-    private void applyPhysicsPositions(){
-        positionComponents.applyChanges();
-        //only from user changed entities? do I need to ask for added and remove too?
-        //applyPhysicsPositions(positionComponents.getAddedEntities());
-        //applyPhysicsPositions(positionComponents.getChangedEntities());
-        positionComponents.forEach(entity -> {
-            PhysicsRigidBody rigidBody = rigidBodies.getObject(entity.getId());
-            if (rigidBody != null) {
-                PhysicsPositionComponent positionInfo = entity.get(PhysicsPositionComponent.class);
-                rigidBody.setPhysicsLocation(positionInfo.getLocation());
-                rigidBody.setPhysicsRotation(positionInfo.getRotation());
-            }
-        });
-    }
+    @Override
+    public void physicsTick(PhysicsSpace space, float tpf) {
+        //copy position to es
 
-    private void applyForces(){
-        forces.applyChanges();
-        forces.forEach(entity -> {
-            PhysicsForceComponent forceInfo = entity.get(PhysicsForceComponent.class);
-            entityData.removeComponent(entity.getId(), PhysicsForceComponent.class); //set to 0?
-            PhysicsRigidBody rigidBody = rigidBodies.getObject(entity.getId());
-            if (rigidBody != null){
-                //should be applied in physics tick listener?
-                rigidBody.applyForce(forceInfo.getForce(), forceInfo.getLocation());
-            }
-        });
-
-    }
-
-
-    private class RigidBodyContainer extends EntityContainer<PhysicsRigidBody>{
-
-        public RigidBodyContainer(EntityData ed) {
-            super(ed, PhysicsRigidBodyComponent.class, CollisionShapeComponent.class);
+        for(PhysicsController controller : controllers){
+            controller.physicsTick(space, tpf);
         }
 
-        @Override
-        protected PhysicsRigidBody addObject(Entity e) {
-            PhysicsRigidBodyComponent rigidBodyInfo = e.get(PhysicsRigidBodyComponent.class);
-            CollisionShapeComponent collisionShapeInfo = e.get(CollisionShapeComponent.class);
-            PhysicsRigidBody rigidBody = new PhysicsRigidBody(collisionShapeInfo.getCollisionShape(), rigidBodyInfo.getMass());
-            rigidBody.setMass(rigidBodyInfo.getMass());
-            rigidBody.setKinematic(rigidBodyInfo.isKinematic());
-            rigidBody.setUserObject(e.getId());
-            physicsSpace.add(rigidBody);
-            return rigidBody;
-        }
-
-        @Override
-        protected void updateObject(PhysicsRigidBody object, Entity e) {
-            PhysicsRigidBodyComponent rigidBodyInfo = e.get(PhysicsRigidBodyComponent.class);
-            CollisionShapeComponent collisionShapeInfo = e.get(CollisionShapeComponent.class);
-            object.setKinematic(rigidBodyInfo.isKinematic());
-            object.setMass(rigidBodyInfo.getMass());
-            object.setCollisionShape(collisionShapeInfo.getCollisionShape());
-//            object.setUserObject(e.getId()); already set?
-        }
-
-        @Override
-        protected void removeObject(PhysicsRigidBody object, Entity e) {
-            physicsSpace.remove(object);
-        }
+        //safe changes to know at the next call which are updated by the user
+        //positionComponents.applyChanges(); //not good because of multithreading
     }
 
 
