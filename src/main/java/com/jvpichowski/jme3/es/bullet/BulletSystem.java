@@ -2,19 +2,22 @@ package com.jvpichowski.jme3.es.bullet;
 
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.PhysicsTickListener;
+import com.jme3.bullet.collision.PhysicsCollisionEvent;
+import com.jme3.bullet.collision.PhysicsCollisionListener;
+import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
-import com.jvpichowski.jme3.es.bullet.components.Force;
-import com.jvpichowski.jme3.es.bullet.components.ForceController;
-import com.jvpichowski.jme3.es.bullet.components.LinearVelocityController;
-import com.jvpichowski.jme3.es.bullet.components.PhysicsPositionController;
+import com.jvpichowski.jme3.es.bullet.components.*;
 import com.simsilica.es.*;
+
+import java.util.HashSet;
+import java.util.Set;
 
 
 /**
  * Created by Jan on 30.01.2017.
  */
-public final class BulletSystem implements PhysicsTickListener{
+public final class BulletSystem implements PhysicsTickListener, PhysicsCollisionListener{
 
     private PhysicsSpace.BroadphaseType broadphaseType;
     private Vector3f worldMin;
@@ -24,6 +27,7 @@ public final class BulletSystem implements PhysicsTickListener{
 
     private EntityContainer<PhysicsRigidBody> rigidBodies;
     private PhysicsController[] controllers;
+    private EntitySet collidingObjects;
 
     private static PhysicsController[] defaultControllers(){
         return new PhysicsController[]{
@@ -56,6 +60,7 @@ public final class BulletSystem implements PhysicsTickListener{
         }else{
             this.controllers = controllers;
         }
+        collidingObjects = entityData.getEntities(Collision.class);
 
         physicsSpace = new PhysicsSpace(worldMin, worldMax, broadphaseType);
         rigidBodies = new RigidBodyContainer(entityData, physicsSpace);
@@ -64,6 +69,10 @@ public final class BulletSystem implements PhysicsTickListener{
         }
 
         physicsSpace.addTickListener(this);
+        physicsSpace.addCollisionListener(this);
+        //physicsSpace.addCollisionObject();
+        //physicsSpace.addCollisionGroupListener();
+
         rigidBodies.start();
 
         //init all already added components
@@ -82,6 +91,7 @@ public final class BulletSystem implements PhysicsTickListener{
     }
 
     public void destroy(){
+        physicsSpace.removeCollisionListener(this);
         physicsSpace.removeTickListener(this);
         rigidBodies.stop();
         for(PhysicsController controller : controllers){
@@ -92,7 +102,10 @@ public final class BulletSystem implements PhysicsTickListener{
     }
 
     /**
-     * For debugging with BulletDebugAppState
+     * For debugging with BulletDebugAppState or advanced behavior.
+     * E.G. attach your own event listeners and so on.
+     * Be aware that every physics object has an EntityId as UserObject attached.
+     *
      * @return
      */
     public PhysicsSpace getPhysicsSpace(){
@@ -108,6 +121,10 @@ public final class BulletSystem implements PhysicsTickListener{
      */
     @Override
     public void prePhysicsTick(PhysicsSpace space, float tpf) {
+        //remove all collisions
+        collidingObjects.applyChanges();
+        collidingObjects.forEach(entity -> entityData.removeComponent(entity.getId(), Collision.class));
+
         //update rigid bodies
         rigidBodies.update();
         //copy position to physics
@@ -135,4 +152,25 @@ public final class BulletSystem implements PhysicsTickListener{
     }
 
 
+    @Override
+    public void collision(PhysicsCollisionEvent event) {
+        EntityId a = (EntityId)event.getObjectA().getUserObject();
+        EntityId b = (EntityId)event.getObjectB().getUserObject();
+        //change collision list of a
+        Collision collisionComponent = entityData.getComponent(a, Collision.class);
+        if(collisionComponent == null){
+            collisionComponent = new Collision(new HashSet<>());
+        }
+        Set<EntityId> collisions = collisionComponent.getCollisions();
+        collisions.add(b);
+        entityData.setComponent(a, new Collision(collisions));
+        //change collision list of b
+        collisionComponent = entityData.getComponent(b, Collision.class);
+        if(collisionComponent == null){
+            collisionComponent = new Collision(new HashSet<>());
+        }
+        collisions = collisionComponent.getCollisions();
+        collisions.add(a);
+        entityData.setComponent(b, new Collision(collisions));
+    }
 }
