@@ -5,6 +5,7 @@ import com.jme3.bullet.PhysicsTickListener;
 import com.jme3.bullet.collision.PhysicsCollisionEvent;
 import com.jme3.bullet.collision.PhysicsCollisionListener;
 import com.jme3.bullet.collision.PhysicsCollisionObject;
+import com.jme3.bullet.objects.PhysicsGhostObject;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
 import com.jvpichowski.jme3.es.bullet.components.*;
@@ -26,6 +27,7 @@ public final class BulletSystem implements PhysicsTickListener, PhysicsCollision
     private EntityData entityData = null;
 
     private EntityContainer<PhysicsRigidBody> rigidBodies;
+    private EntityContainer<PhysicsGhostObject> ghostObjects;
     private PhysicsController[] controllers;
     private EntitySet collidingObjects;
 
@@ -64,6 +66,7 @@ public final class BulletSystem implements PhysicsTickListener, PhysicsCollision
 
         physicsSpace = new PhysicsSpace(worldMin, worldMax, broadphaseType);
         rigidBodies = new RigidBodyContainer(entityData, physicsSpace);
+        ghostObjects = new GhostObjectContainer(entityData, physicsSpace);
         for(PhysicsController controller : this.controllers){
             controller.initialize(entityData, rigidBodies);
         }
@@ -74,6 +77,7 @@ public final class BulletSystem implements PhysicsTickListener, PhysicsCollision
         //physicsSpace.addCollisionGroupListener();
 
         rigidBodies.start();
+        ghostObjects.start();
 
         //init all already added components
         //positionComponents.applyChanges();
@@ -93,6 +97,7 @@ public final class BulletSystem implements PhysicsTickListener, PhysicsCollision
     public void destroy(){
         physicsSpace.removeCollisionListener(this);
         physicsSpace.removeTickListener(this);
+        ghostObjects.stop();
         rigidBodies.stop();
         for(PhysicsController controller : controllers){
             controller.destroy();
@@ -127,6 +132,7 @@ public final class BulletSystem implements PhysicsTickListener, PhysicsCollision
 
         //update rigid bodies
         rigidBodies.update();
+        ghostObjects.update();
         //copy position to physics
         for(PhysicsController controller : controllers){
             controller.prePhysicsTick(space, tpf);
