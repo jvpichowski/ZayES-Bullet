@@ -36,13 +36,15 @@
 
 package com.jvpichowski.jme3.examples;
 
+import com.jvpichowski.jme3.examples.es.bullet.BasicExample;
+
 /**
  *
  */
 public class Main {
 
     public static void main(String[] args) {
-        ESBulletExample.main(args);
+        BasicExample.main(args);
     }
 }
 

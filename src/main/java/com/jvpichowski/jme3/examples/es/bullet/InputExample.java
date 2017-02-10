@@ -1,37 +1,39 @@
-package com.jvpichowski.jme3.examples;
+package com.jvpichowski.jme3.examples.es.bullet;
 
 import com.jme3.app.FlyCamAppState;
 import com.jme3.app.SimpleApplication;
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.PlaneCollisionShape;
 import com.jme3.bullet.debug.BulletDebugAppState;
+import com.jme3.input.KeyInput;
+import com.jme3.input.controls.AnalogListener;
+import com.jme3.input.controls.KeyTrigger;
 import com.jme3.math.Plane;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import com.jvpichowski.jme3.es.bullet.components.RigidBody;
 import com.jvpichowski.jme3.es.bullet.components.CollisionShape;
 import com.jvpichowski.jme3.es.bullet.components.Force;
 import com.jvpichowski.jme3.es.bullet.components.PhysicsPosition;
-import com.jvpichowski.jme3.es.bullet.components.RigidBody;
 import com.jvpichowski.jme3.states.ESBulletState;
 import com.simsilica.es.EntityData;
 import com.simsilica.es.EntityId;
 import com.simsilica.es.base.DefaultEntityData;
 
-
 /**
- * Created by Jan on 06.02.2017.
+ * Created by Jan on 08.02.2017.
  */
-public class ESBulletExample extends SimpleApplication {
+public class InputExample extends SimpleApplication {
 
     public static void main(String[] args) {
         EntityData entityData = new DefaultEntityData();
-        ESBulletExample app = new ESBulletExample(entityData);
+        InputExample app = new InputExample(entityData);
         app.start();
     }
 
     private final EntityData entityData;
 
-    public ESBulletExample(EntityData entityData){
+    public InputExample(EntityData entityData){
         super(new FlyCamAppState(), new ESBulletState(entityData));
         this.entityData = entityData;
     }
@@ -57,8 +59,12 @@ public class ESBulletExample extends SimpleApplication {
                 new RigidBody(false, 0),
                 new CollisionShape(new BoxCollisionShape(new Vector3f(0.5f,0.5f,0.5f))));
 
-        //uncomment this line and notice the difference
-        //entityData.setComponent(box, new Force(new Vector3f(100,100,100), new Vector3f()));
+        getInputManager().addMapping("Push", new KeyTrigger(KeyInput.KEY_SPACE));
+        getInputManager().addListener((AnalogListener) (name, time, tpf) -> {
+            //100 Newton  are needed to lift the box up against the gravity (10kg * 9.81m/s^2 < 100N)
+            entityData.setComponent(box, new Force(new Vector3f(0,100,0), new Vector3f()));
+        }, "Push");
+
     }
 
     @Override
