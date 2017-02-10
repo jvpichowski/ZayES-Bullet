@@ -34,11 +34,13 @@ final class RigidBodyContainer extends EntityContainer<PhysicsRigidBody> {
 
     @Override
     protected void updateObject(PhysicsRigidBody object, Entity e) {
+        physicsSpace.remove(object);
         RigidBody rigidBodyInfo = e.get(RigidBody.class);
         CollisionShape collisionShapeInfo = e.get(CollisionShape.class);
         object.setKinematic(rigidBodyInfo.isKinematic());
         object.setMass(rigidBodyInfo.getMass());
         object.setCollisionShape(collisionShapeInfo.getCollisionShape());
+        physicsSpace.add(object);
 //            object.setUserObject(e.getId()); already set?
     }
 
