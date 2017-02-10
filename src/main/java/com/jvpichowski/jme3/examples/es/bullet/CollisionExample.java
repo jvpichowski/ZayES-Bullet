@@ -18,7 +18,7 @@ import com.simsilica.es.base.DefaultEntityData;
 
 
 /**
- * Created by Jan on 06.02.2017.
+ * Example No. 3
  */
 public class CollisionExample extends SimpleApplication {
 

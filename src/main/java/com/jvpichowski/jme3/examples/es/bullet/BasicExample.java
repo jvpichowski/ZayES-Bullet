@@ -18,7 +18,7 @@ import com.simsilica.es.base.DefaultEntityData;
 
 
 /**
- * Created by Jan on 06.02.2017.
+ * Example No. 1
  */
 public class BasicExample extends SimpleApplication {
 

@@ -21,7 +21,7 @@ import com.simsilica.es.EntityId;
 import com.simsilica.es.base.DefaultEntityData;
 
 /**
- * Created by Jan on 08.02.2017.
+ * Example No. 2
  */
 public class InputExample extends SimpleApplication {
 
