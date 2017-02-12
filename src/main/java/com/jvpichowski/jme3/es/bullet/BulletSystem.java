@@ -4,14 +4,13 @@ import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.PhysicsTickListener;
 import com.jme3.bullet.collision.PhysicsCollisionEvent;
 import com.jme3.bullet.collision.PhysicsCollisionListener;
-import com.jme3.bullet.collision.PhysicsCollisionObject;
-import com.jme3.bullet.objects.PhysicsGhostObject;
-import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
 import com.jvpichowski.jme3.es.bullet.components.*;
 import com.simsilica.es.*;
 
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 
@@ -26,50 +25,37 @@ public final class BulletSystem implements PhysicsTickListener, PhysicsCollision
     private PhysicsSpace physicsSpace = null;
     private EntityData entityData = null;
 
-    private EntityContainer<PhysicsRigidBody> rigidBodies;
-    private EntityContainer<PhysicsGhostObject> ghostObjects;
-    private PhysicsController[] controllers;
+    private RigidBodyContainer rigidBodies;
+    private GhostObjectContainer ghostObjects;
     private EntitySet collidingObjects;
 
-    private static PhysicsController[] defaultControllers(){
-        return new PhysicsController[]{
-                new PhysicsPositionController(),
-                new LinearVelocityController(),
-                new ForceController()
-        };
-    }
+    private List<PhysicsSystem> physicsSystems = new LinkedList<>();
 
     /**
      *
      * @param entityData
-     * @param controllers the controllers which should change the physics state.
+     * @param systems the systems which should change the physics state.
      *                    If no controllers are given the default controllers will be added.
      */
-    public BulletSystem(EntityData entityData, PhysicsController... controllers){
+    public BulletSystem(EntityData entityData, PhysicsSystem... systems){
         this(entityData,
                 new Vector3f(-10000f, -10000f, -10000f),
                 new Vector3f(10000f, 10000f, 10000f),
-                PhysicsSpace.BroadphaseType.DBVT, controllers);
+                PhysicsSpace.BroadphaseType.DBVT, systems);
     }
 
-    public BulletSystem(EntityData entityData, Vector3f worldMin, Vector3f worldMax, PhysicsSpace.BroadphaseType broadphaseType, PhysicsController... controllers){
+    public BulletSystem(EntityData entityData, Vector3f worldMin, Vector3f worldMax,
+                        PhysicsSpace.BroadphaseType broadphaseType, PhysicsSystem... systems){
         this.entityData = entityData;
         this.broadphaseType = broadphaseType;
         this.worldMin = worldMin;
         this.worldMax = worldMax;
-        if(controllers.length == 0){
-            this.controllers = defaultControllers();
-        }else{
-            this.controllers = controllers;
-        }
+
         collidingObjects = entityData.getEntities(Collision.class);
 
         physicsSpace = new PhysicsSpace(worldMin, worldMax, broadphaseType);
         rigidBodies = new RigidBodyContainer(entityData, physicsSpace);
         ghostObjects = new GhostObjectContainer(entityData, physicsSpace);
-        for(PhysicsController controller : this.controllers){
-            controller.initialize(entityData, rigidBodies);
-        }
 
         physicsSpace.addTickListener(this);
         physicsSpace.addCollisionListener(this);
@@ -82,6 +68,18 @@ public final class BulletSystem implements PhysicsTickListener, PhysicsCollision
         //init all already added components
         //positionComponents.applyChanges();
         //applyPhysicsPositions(positionComponents);
+
+        if(systems.length == 0){
+            physicsSystems.add(new PhysicsPositionSystem());
+            physicsSystems.add(new ForceSystem());
+            physicsSystems.add(new GravitySystem());
+        }else{
+            for(PhysicsSystem system : systems){
+                physicsSystems.add(system);
+            }
+        }
+
+        physicsSystems.forEach(physicsSystem -> physicsSystem.initialize(entityData, this));
     }
 
     public void update(float time){
@@ -95,13 +93,13 @@ public final class BulletSystem implements PhysicsTickListener, PhysicsCollision
     }
 
     public void destroy(){
+        physicsSystems.forEach(physicsSystem -> physicsSystem.destroy(entityData, this));
+
         physicsSpace.removeCollisionListener(this);
         physicsSpace.removeTickListener(this);
         ghostObjects.stop();
         rigidBodies.stop();
-        for(PhysicsController controller : controllers){
-            controller.destroy();
-        }
+
         physicsSpace.destroy();
         physicsSpace = null;
     }
@@ -117,6 +115,13 @@ public final class BulletSystem implements PhysicsTickListener, PhysicsCollision
         return physicsSpace;
     }
 
+    public RigidBodyContainer getRigidBodies() {
+        return rigidBodies;
+    }
+
+    public GhostObjectContainer getGhostObjects() {
+        return ghostObjects;
+    }
 
     /**
      * DO NOT CALL
@@ -134,9 +139,7 @@ public final class BulletSystem implements PhysicsTickListener, PhysicsCollision
         rigidBodies.update();
         ghostObjects.update();
         //copy position to physics
-        for(PhysicsController controller : controllers){
-            controller.prePhysicsTick(space, tpf);
-        }
+
     }
 
     /**
@@ -148,10 +151,6 @@ public final class BulletSystem implements PhysicsTickListener, PhysicsCollision
     @Override
     public void physicsTick(PhysicsSpace space, float tpf) {
         //copy position to es
-
-        for(PhysicsController controller : controllers){
-            controller.physicsTick(space, tpf);
-        }
 
         //safe changes to know at the next call which are updated by the user
         //positionComponents.applyChanges(); //not good because of multithreading

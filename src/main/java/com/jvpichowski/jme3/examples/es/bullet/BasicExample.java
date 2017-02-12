@@ -9,6 +9,7 @@ import com.jme3.math.Plane;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jvpichowski.jme3.es.bullet.components.CollisionShape;
+import com.jvpichowski.jme3.es.bullet.components.Force;
 import com.jvpichowski.jme3.es.bullet.components.PhysicsPosition;
 import com.jvpichowski.jme3.es.bullet.components.RigidBody;
 import com.jvpichowski.jme3.states.ESBulletState;
@@ -57,7 +58,7 @@ public class BasicExample extends SimpleApplication {
                 new CollisionShape(new BoxCollisionShape(new Vector3f(0.5f,0.5f,0.5f))));
 
         //uncomment this line and notice the difference
-        //entityData.setComponent(box, new Force(new Vector3f(100,100,100), new Vector3f()));
+        entityData.setComponent(box, new Force(new Vector3f(100,100,100), new Vector3f()));
     }
 
     @Override

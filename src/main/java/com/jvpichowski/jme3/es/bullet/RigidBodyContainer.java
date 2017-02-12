@@ -11,11 +11,11 @@ import com.simsilica.es.EntityData;
 /**
  * Created by Jan on 08.02.2017.
  */
-final class RigidBodyContainer extends EntityContainer<PhysicsRigidBody> {
+public final class RigidBodyContainer extends EntityContainer<PhysicsRigidBody> {
 
     private PhysicsSpace physicsSpace;
 
-    public RigidBodyContainer(EntityData ed, PhysicsSpace physicsSpace) {
+    RigidBodyContainer(EntityData ed, PhysicsSpace physicsSpace) {
         super(ed, RigidBody.class, CollisionShape.class);
         this.physicsSpace = physicsSpace;
     }

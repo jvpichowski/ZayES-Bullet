@@ -11,11 +11,11 @@ import com.simsilica.es.EntityData;
 /**
  * Created by jan on 10.02.2017.
  */
-final class GhostObjectContainer extends EntityContainer<PhysicsGhostObject> {
+public final class GhostObjectContainer extends EntityContainer<PhysicsGhostObject> {
 
     private PhysicsSpace physicsSpace;
 
-    public GhostObjectContainer(EntityData ed, PhysicsSpace physicsSpace) {
+    GhostObjectContainer(EntityData ed, PhysicsSpace physicsSpace) {
         super(ed, GhostObject.class, CollisionShape.class);
         this.physicsSpace = physicsSpace;
     }
