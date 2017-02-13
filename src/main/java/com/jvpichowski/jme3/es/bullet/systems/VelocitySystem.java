@@ -3,6 +3,7 @@ package com.jvpichowski.jme3.es.bullet.systems;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.PhysicsTickListener;
 import com.jme3.bullet.objects.PhysicsRigidBody;
+import com.jme3.math.Vector3f;
 import com.jvpichowski.jme3.es.bullet.BulletSystem;
 import com.jvpichowski.jme3.es.bullet.PhysicsSystem;
 import com.jvpichowski.jme3.es.bullet.RigidBodyContainer;
@@ -45,14 +46,20 @@ public final class VelocitySystem implements PhysicsSystem, PhysicsTickListener 
         linearVelocities.forEach(entity -> {
             PhysicsRigidBody rigidBody = rigidBodies.getObject(entity.getId());
             if(rigidBody != null){
-                rigidBody.setLinearVelocity(entity.get(LinearVelocity.class).getVelocity());
+                Vector3f velocity = entity.get(LinearVelocity.class).getVelocity();
+                if(!rigidBody.getLinearVelocity().equals(velocity)) {
+                    rigidBody.setLinearVelocity(velocity);
+                }
             }
         });
         angularVelocities.applyChanges();
         angularVelocities.forEach(entity -> {
             PhysicsRigidBody rigidBody = rigidBodies.getObject(entity.getId());
             if(rigidBody != null){
-                rigidBody.setAngularVelocity(entity.get(AngularVelocity.class).getVelocity());
+                Vector3f velocity = entity.get(AngularVelocity.class).getVelocity();
+                if(!rigidBody.getAngularVelocity().equals(velocity)) {
+                    rigidBody.setAngularVelocity(velocity);
+                }
             }
         });
     }
