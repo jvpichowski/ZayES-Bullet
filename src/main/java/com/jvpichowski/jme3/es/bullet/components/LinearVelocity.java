@@ -8,16 +8,17 @@ import com.simsilica.es.EntityComponent;
  */
 public final class LinearVelocity implements EntityComponent{
 
-    private Vector3f linearVelocity;
+    private Vector3f velocity;
 
-    public LinearVelocity(Vector3f linearVelocity) {
-        this.linearVelocity = linearVelocity;
+    public LinearVelocity(Vector3f velocity) {
+        this.velocity = velocity;
     }
 
     public LinearVelocity() {
+        this.velocity = new Vector3f();
     }
 
-    public Vector3f getLinearVelocity() {
-        return linearVelocity;
+    public Vector3f getVelocity() {
+        return velocity;
     }
 }

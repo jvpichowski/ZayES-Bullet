@@ -18,7 +18,7 @@ public final class Force implements EntityComponent {
     }
 
     public Force() {
-        this(null, null);
+        this(new Vector3f(), new Vector3f());
     }
 
     public Vector3f getForce() {

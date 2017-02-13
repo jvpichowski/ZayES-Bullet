@@ -1,4 +1,4 @@
-package com.jvpichowski.jme3.es.bullet.components;
+package com.jvpichowski.jme3.es.bullet.systems;
 
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.PhysicsTickListener;
@@ -6,6 +6,7 @@ import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jvpichowski.jme3.es.bullet.BulletSystem;
 import com.jvpichowski.jme3.es.bullet.PhysicsSystem;
 import com.jvpichowski.jme3.es.bullet.RigidBodyContainer;
+import com.jvpichowski.jme3.es.bullet.components.Gravity;
 import com.simsilica.es.EntityData;
 import com.simsilica.es.EntityId;
 import com.simsilica.es.EntitySet;

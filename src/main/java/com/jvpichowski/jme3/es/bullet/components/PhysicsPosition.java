@@ -7,7 +7,7 @@ import com.simsilica.es.EntityComponent;
 /**
  * Created by Jan on 30.01.2017.
  */
-public class PhysicsPosition implements EntityComponent {
+public final class PhysicsPosition implements EntityComponent {
 
     private Quaternion rotation;
     private Vector3f location;
@@ -18,6 +18,8 @@ public class PhysicsPosition implements EntityComponent {
     }
 
     public PhysicsPosition() {
+        this.rotation = Quaternion.DIRECTION_Z.clone();
+        this.location = new Vector3f();
     }
 
     public Quaternion getRotation() {

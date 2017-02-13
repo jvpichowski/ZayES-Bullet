@@ -5,7 +5,7 @@ import com.simsilica.es.EntityComponent;
 /**
  * Created by jan on 10.02.2017.
  */
-public class GhostObject implements EntityComponent {
+public final class GhostObject implements EntityComponent {
 
     public GhostObject() {
     }

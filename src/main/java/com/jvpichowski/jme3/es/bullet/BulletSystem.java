@@ -2,22 +2,18 @@ package com.jvpichowski.jme3.es.bullet;
 
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.PhysicsTickListener;
-import com.jme3.bullet.collision.PhysicsCollisionEvent;
-import com.jme3.bullet.collision.PhysicsCollisionListener;
 import com.jme3.math.Vector3f;
-import com.jvpichowski.jme3.es.bullet.components.*;
+import com.jvpichowski.jme3.es.bullet.systems.*;
 import com.simsilica.es.*;
 
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 
 /**
  * Created by Jan on 30.01.2017.
  */
-public final class BulletSystem implements PhysicsTickListener, PhysicsCollisionListener{
+public final class BulletSystem implements PhysicsTickListener{
 
     private PhysicsSpace.BroadphaseType broadphaseType;
     private Vector3f worldMin;
@@ -27,8 +23,8 @@ public final class BulletSystem implements PhysicsTickListener, PhysicsCollision
 
     private RigidBodyContainer rigidBodies;
     private GhostObjectContainer ghostObjects;
-    private EntitySet collidingObjects;
 
+    //This list contains all physics subsystems
     private List<PhysicsSystem> physicsSystems = new LinkedList<>();
 
     /**
@@ -51,14 +47,11 @@ public final class BulletSystem implements PhysicsTickListener, PhysicsCollision
         this.worldMin = worldMin;
         this.worldMax = worldMax;
 
-        collidingObjects = entityData.getEntities(Collision.class);
-
         physicsSpace = new PhysicsSpace(worldMin, worldMax, broadphaseType);
         rigidBodies = new RigidBodyContainer(entityData, physicsSpace);
         ghostObjects = new GhostObjectContainer(entityData, physicsSpace);
 
         physicsSpace.addTickListener(this);
-        physicsSpace.addCollisionListener(this);
         //physicsSpace.addCollisionObject();
         //physicsSpace.addCollisionGroupListener();
 
@@ -70,9 +63,12 @@ public final class BulletSystem implements PhysicsTickListener, PhysicsCollision
         //applyPhysicsPositions(positionComponents);
 
         if(systems.length == 0){
+            physicsSystems.add(new CollisionSystem());
             physicsSystems.add(new PhysicsPositionSystem());
             physicsSystems.add(new ForceSystem());
             physicsSystems.add(new GravitySystem());
+            physicsSystems.add(new VelocitySystem());
+            physicsSystems.add(new ImpulseSystem());
         }else{
             for(PhysicsSystem system : systems){
                 physicsSystems.add(system);
@@ -95,7 +91,6 @@ public final class BulletSystem implements PhysicsTickListener, PhysicsCollision
     public void destroy(){
         physicsSystems.forEach(physicsSystem -> physicsSystem.destroy(entityData, this));
 
-        physicsSpace.removeCollisionListener(this);
         physicsSpace.removeTickListener(this);
         ghostObjects.stop();
         rigidBodies.stop();
@@ -132,9 +127,6 @@ public final class BulletSystem implements PhysicsTickListener, PhysicsCollision
     @Override
     public void prePhysicsTick(PhysicsSpace space, float tpf) {
         //remove all collisions
-        collidingObjects.applyChanges();
-        collidingObjects.forEach(entity -> entityData.removeComponent(entity.getId(), Collision.class));
-
         //update rigid bodies
         rigidBodies.update();
         ghostObjects.update();
@@ -154,28 +146,5 @@ public final class BulletSystem implements PhysicsTickListener, PhysicsCollision
 
         //safe changes to know at the next call which are updated by the user
         //positionComponents.applyChanges(); //not good because of multithreading
-    }
-
-
-    @Override
-    public void collision(PhysicsCollisionEvent event) {
-        EntityId a = (EntityId)event.getObjectA().getUserObject();
-        EntityId b = (EntityId)event.getObjectB().getUserObject();
-        //change collision list of a
-        Collision collisionComponent = entityData.getComponent(a, Collision.class);
-        if(collisionComponent == null){
-            collisionComponent = new Collision(new HashSet<>());
-        }
-        Set<EntityId> collisions = collisionComponent.getCollisions();
-        collisions.add(b);
-        entityData.setComponent(a, new Collision(collisions));
-        //change collision list of b
-        collisionComponent = entityData.getComponent(b, Collision.class);
-        if(collisionComponent == null){
-            collisionComponent = new Collision(new HashSet<>());
-        }
-        collisions = collisionComponent.getCollisions();
-        collisions.add(a);
-        entityData.setComponent(b, new Collision(collisions));
     }
 }
