@@ -27,21 +27,27 @@ public final class RigidBodyContainer extends EntityContainer<PhysicsRigidBody> 
         PhysicsRigidBody rigidBody = new PhysicsRigidBody(collisionShapeInfo.getCollisionShape(), rigidBodyInfo.getMass());
         rigidBody.setMass(rigidBodyInfo.getMass());
         rigidBody.setKinematic(rigidBodyInfo.isKinematic());
+        rigidBody.setFriction(rigidBodyInfo.getFriction());
+        rigidBody.setRestitution(rigidBodyInfo.getRestitution());
         rigidBody.setUserObject(e.getId());
         physicsSpace.add(rigidBody);
         return rigidBody;
     }
 
     @Override
-    protected void updateObject(PhysicsRigidBody object, Entity e) {
-        physicsSpace.remove(object);
+    protected void updateObject(PhysicsRigidBody rigidBody, Entity e) {
         RigidBody rigidBodyInfo = e.get(RigidBody.class);
         CollisionShape collisionShapeInfo = e.get(CollisionShape.class);
-        object.setKinematic(rigidBodyInfo.isKinematic());
-        object.setMass(rigidBodyInfo.getMass());
-        object.setCollisionShape(collisionShapeInfo.getCollisionShape());
-        physicsSpace.add(object);
-//            object.setUserObject(e.getId()); already set?
+        rigidBody.setKinematic(rigidBodyInfo.isKinematic());
+        rigidBody.setMass(rigidBodyInfo.getMass());
+        rigidBody.setFriction(rigidBodyInfo.getFriction());
+        rigidBody.setRestitution(rigidBodyInfo.getRestitution());
+        if(!rigidBody.getCollisionShape().equals(collisionShapeInfo.getCollisionShape())) {
+            physicsSpace.remove(rigidBody);
+            rigidBody.setCollisionShape(collisionShapeInfo.getCollisionShape());
+            physicsSpace.add(rigidBody);
+        }
+//            rigidBody.setUserObject(e.getId()); already set?
     }
 
     @Override
