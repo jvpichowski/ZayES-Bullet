@@ -7,7 +7,7 @@ import com.simsilica.es.EntityComponent;
 /**
  * Created by jan on 13.02.2017.
  */
-public class CollisionGroup implements EntityComponent {
+public final class CollisionGroup implements EntityComponent {
 
     private int collideWithGroups;
     private int collisionGroup;

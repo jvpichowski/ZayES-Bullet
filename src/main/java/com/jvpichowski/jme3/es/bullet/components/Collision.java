@@ -9,7 +9,7 @@ import java.util.Set;
 /**
  * Created by Jan on 09.02.2017.
  */
-public class Collision implements EntityComponent{
+public final class Collision implements EntityComponent{
 
     private Set<EntityId> collisions;
 
