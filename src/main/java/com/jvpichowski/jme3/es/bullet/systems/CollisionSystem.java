@@ -4,9 +4,12 @@ import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.PhysicsTickListener;
 import com.jme3.bullet.collision.PhysicsCollisionEvent;
 import com.jme3.bullet.collision.PhysicsCollisionListener;
+import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jvpichowski.jme3.es.bullet.BulletSystem;
 import com.jvpichowski.jme3.es.bullet.PhysicsSystem;
+import com.jvpichowski.jme3.es.bullet.RigidBodyContainer;
 import com.jvpichowski.jme3.es.bullet.components.Collision;
+import com.jvpichowski.jme3.es.bullet.components.CollisionGroup;
 import com.simsilica.es.EntityData;
 import com.simsilica.es.EntityId;
 import com.simsilica.es.EntitySet;
@@ -21,11 +24,16 @@ public final class CollisionSystem implements PhysicsSystem, PhysicsCollisionLis
 
     private EntityData entityData;
     private EntitySet collidingObjects;
+    private EntitySet collisionGroups;
+
+    private RigidBodyContainer rigidBodies;
 
     @Override
     public void initialize(EntityData entityData, BulletSystem bulletSystem) {
         this.entityData = entityData;
         collidingObjects = entityData.getEntities(Collision.class);
+        collisionGroups = entityData.getEntities(CollisionGroup.class);
+        rigidBodies = bulletSystem.getRigidBodies();
         bulletSystem.getPhysicsSpace().addTickListener(this);
         bulletSystem.getPhysicsSpace().addCollisionListener(this);
     }
@@ -35,13 +43,22 @@ public final class CollisionSystem implements PhysicsSystem, PhysicsCollisionLis
         bulletSystem.getPhysicsSpace().removeCollisionListener(this);
         bulletSystem.getPhysicsSpace().removeTickListener(this);
         collidingObjects.release();
+        collisionGroups.release();
     }
 
     @Override
     public void prePhysicsTick(PhysicsSpace space, float tpf) {
         collidingObjects.applyChanges();
         collidingObjects.forEach(entity -> entityData.removeComponent(entity.getId(), Collision.class));
-
+        collisionGroups.applyChanges();
+        collisionGroups.forEach(entity -> {
+            PhysicsRigidBody rigidBody = rigidBodies.getObject(entity.getId());
+            if(rigidBody != null){
+                CollisionGroup collisionGroup = entity.get(CollisionGroup.class);
+                rigidBody.setCollideWithGroups(collisionGroup.getCollideWithGroups());
+                rigidBody.setCollisionGroup(collisionGroup.getCollisionGroup());
+            }
+        });
     }
 
     @Override
