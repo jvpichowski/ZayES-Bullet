@@ -4,10 +4,7 @@ import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.PhysicsTickListener;
 import com.jme3.bullet.objects.PhysicsGhostObject;
 import com.jme3.bullet.objects.PhysicsRigidBody;
-import com.jvpichowski.jme3.es.bullet.BulletSystem;
-import com.jvpichowski.jme3.es.bullet.PhysicsSystem;
-import com.jvpichowski.jme3.es.bullet.GhostObjectContainer;
-import com.jvpichowski.jme3.es.bullet.RigidBodyContainer;
+import com.jvpichowski.jme3.es.bullet.*;
 import com.jvpichowski.jme3.es.bullet.components.PhysicsPosition;
 import com.simsilica.es.EntityData;
 import com.simsilica.es.EntityId;
@@ -30,7 +27,12 @@ public final class PhysicsPositionSystem implements PhysicsSystem, PhysicsTickLi
         this.entityData = entityData;
         rigidBodies = bulletSystem.getRigidBodies();
         ghostObjects = bulletSystem.getGhostObjects();
-        physicsPositions = entityData.getEntities(PhysicsPosition.class);
+        PhysicsInstanceFilter instanceFilter = bulletSystem.getInstanceFilter();
+        if(instanceFilter == null) {
+            physicsPositions = entityData.getEntities(PhysicsPosition.class);
+        }else{
+            physicsPositions = entityData.getEntities(instanceFilter, instanceFilter.getComponentType(), PhysicsPosition.class);
+        }
         bulletSystem.getPhysicsSpace().addTickListener(this);
     }
 

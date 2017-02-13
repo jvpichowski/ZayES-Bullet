@@ -4,6 +4,7 @@ import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.PhysicsTickListener;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jvpichowski.jme3.es.bullet.BulletSystem;
+import com.jvpichowski.jme3.es.bullet.PhysicsInstanceFilter;
 import com.jvpichowski.jme3.es.bullet.PhysicsSystem;
 import com.jvpichowski.jme3.es.bullet.RigidBodyContainer;
 import com.jvpichowski.jme3.es.bullet.components.Gravity;
@@ -24,7 +25,12 @@ public final class GravitySystem implements PhysicsSystem, PhysicsTickListener {
     public void initialize(EntityData entityData, BulletSystem bulletSystem) {
         this.entityData = entityData;
         this.rigidBodies = bulletSystem.getRigidBodies();
-        this.gravities = entityData.getEntities(Gravity.class);
+        PhysicsInstanceFilter filter = bulletSystem.getInstanceFilter();
+        if(filter == null) {
+            this.gravities = entityData.getEntities(Gravity.class);
+        }else{
+            this.gravities = entityData.getEntities(filter, filter.getComponentType(), Gravity.class);
+        }
         bulletSystem.getPhysicsSpace().addTickListener(this);
     }
 

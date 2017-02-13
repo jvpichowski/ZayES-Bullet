@@ -6,6 +6,7 @@ import com.jme3.bullet.collision.PhysicsCollisionEvent;
 import com.jme3.bullet.collision.PhysicsCollisionListener;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jvpichowski.jme3.es.bullet.BulletSystem;
+import com.jvpichowski.jme3.es.bullet.PhysicsInstanceFilter;
 import com.jvpichowski.jme3.es.bullet.PhysicsSystem;
 import com.jvpichowski.jme3.es.bullet.RigidBodyContainer;
 import com.jvpichowski.jme3.es.bullet.components.Collision;
@@ -31,8 +32,14 @@ public final class CollisionSystem implements PhysicsSystem, PhysicsCollisionLis
     @Override
     public void initialize(EntityData entityData, BulletSystem bulletSystem) {
         this.entityData = entityData;
-        collidingObjects = entityData.getEntities(Collision.class);
-        collisionGroups = entityData.getEntities(CollisionGroup.class);
+        PhysicsInstanceFilter filter = bulletSystem.getInstanceFilter();
+        if(filter == null) {
+            collidingObjects = entityData.getEntities(Collision.class);
+            collisionGroups = entityData.getEntities(CollisionGroup.class);
+        }else{
+            collidingObjects = entityData.getEntities(filter, filter.getComponentType(), Collision.class);
+            collisionGroups = entityData.getEntities(filter, filter.getComponentType(), CollisionGroup.class);
+        }
         rigidBodies = bulletSystem.getRigidBodies();
         bulletSystem.getPhysicsSpace().addTickListener(this);
         bulletSystem.getPhysicsSpace().addCollisionListener(this);

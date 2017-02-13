@@ -15,6 +15,12 @@ public final class RigidBodyContainer extends EntityContainer<PhysicsRigidBody> 
 
     private PhysicsSpace physicsSpace;
 
+
+    RigidBodyContainer(EntityData ed, PhysicsSpace physicsSpace, PhysicsInstanceFilter filter) {
+        super(ed, filter, filter.getComponentType(), RigidBody.class, CollisionShape.class);
+        this.physicsSpace = physicsSpace;
+    }
+
     RigidBodyContainer(EntityData ed, PhysicsSpace physicsSpace) {
         super(ed, RigidBody.class, CollisionShape.class);
         this.physicsSpace = physicsSpace;

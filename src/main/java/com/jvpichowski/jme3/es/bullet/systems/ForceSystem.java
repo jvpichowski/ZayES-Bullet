@@ -4,6 +4,7 @@ import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.PhysicsTickListener;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jvpichowski.jme3.es.bullet.BulletSystem;
+import com.jvpichowski.jme3.es.bullet.PhysicsInstanceFilter;
 import com.jvpichowski.jme3.es.bullet.PhysicsSystem;
 import com.jvpichowski.jme3.es.bullet.RigidBodyContainer;
 import com.jvpichowski.jme3.es.bullet.components.CentralForce;
@@ -27,9 +28,16 @@ public final class ForceSystem implements PhysicsSystem, PhysicsTickListener {
     public void initialize(EntityData entityData, BulletSystem bulletSystem) {
         this.entityData = entityData;
         rigidBodies = bulletSystem.getRigidBodies();
-        forces = entityData.getEntities(Force.class);
-        centralForces = entityData.getEntities(CentralForce.class);
-        torques = entityData.getEntities(Torque.class);
+        PhysicsInstanceFilter filter = bulletSystem.getInstanceFilter();
+        if(filter == null) {
+            forces = entityData.getEntities(Force.class);
+            centralForces = entityData.getEntities(CentralForce.class);
+            torques = entityData.getEntities(Torque.class);
+        }else{
+            forces = entityData.getEntities(filter, filter.getComponentType(), Force.class);
+            centralForces = entityData.getEntities(filter, filter.getComponentType(), CentralForce.class);
+            torques = entityData.getEntities(filter, filter.getComponentType(), Torque.class);
+        }
         bulletSystem.getPhysicsSpace().addTickListener(this);
     }
 

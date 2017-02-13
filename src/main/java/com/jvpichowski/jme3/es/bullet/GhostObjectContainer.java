@@ -15,6 +15,12 @@ public final class GhostObjectContainer extends EntityContainer<PhysicsGhostObje
 
     private PhysicsSpace physicsSpace;
 
+
+    GhostObjectContainer(EntityData ed, PhysicsSpace physicsSpace, PhysicsInstanceFilter filter) {
+        super(ed, filter, filter.getComponentType(), GhostObject.class, CollisionShape.class);
+        this.physicsSpace = physicsSpace;
+    }
+
     GhostObjectContainer(EntityData ed, PhysicsSpace physicsSpace) {
         super(ed, GhostObject.class, CollisionShape.class);
         this.physicsSpace = physicsSpace;

@@ -4,6 +4,7 @@ import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.PhysicsTickListener;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jvpichowski.jme3.es.bullet.BulletSystem;
+import com.jvpichowski.jme3.es.bullet.PhysicsInstanceFilter;
 import com.jvpichowski.jme3.es.bullet.PhysicsSystem;
 import com.jvpichowski.jme3.es.bullet.RigidBodyContainer;
 import com.jvpichowski.jme3.es.bullet.components.Impulse;
@@ -26,8 +27,14 @@ public final class ImpulseSystem implements PhysicsSystem, PhysicsTickListener {
     public void initialize(EntityData entityData, BulletSystem bulletSystem) {
         this.entityData = entityData;
         rigidBodies = bulletSystem.getRigidBodies();
-        impulses = entityData.getEntities(Impulse.class);
-        torqueImpulses = entityData.getEntities(TorqueImpulse.class);
+        PhysicsInstanceFilter filter = bulletSystem.getInstanceFilter();
+        if(filter == null) {
+            impulses = entityData.getEntities(Impulse.class);
+            torqueImpulses = entityData.getEntities(TorqueImpulse.class);
+        }else {
+            impulses = entityData.getEntities(filter, filter.getComponentType(), Impulse.class);
+            torqueImpulses = entityData.getEntities(filter, filter.getComponentType(), TorqueImpulse.class);
+        }
         bulletSystem.getPhysicsSpace().addTickListener(this);
     }
 

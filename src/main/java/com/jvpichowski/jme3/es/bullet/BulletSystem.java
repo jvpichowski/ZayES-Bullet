@@ -15,6 +15,8 @@ import java.util.List;
  */
 public final class BulletSystem implements PhysicsTickListener{
 
+    private PhysicsInstanceFilter instanceFilter;
+
     private PhysicsSpace.BroadphaseType broadphaseType;
     private Vector3f worldMin;
     private Vector3f worldMax;
@@ -37,19 +39,36 @@ public final class BulletSystem implements PhysicsTickListener{
         this(entityData,
                 new Vector3f(-10000f, -10000f, -10000f),
                 new Vector3f(10000f, 10000f, 10000f),
-                PhysicsSpace.BroadphaseType.DBVT, systems);
+                PhysicsSpace.BroadphaseType.DBVT, 0, systems);
+    }
+
+    public BulletSystem(EntityData entityData, int instance, PhysicsSystem... systems){
+        this(entityData,
+                new Vector3f(-10000f, -10000f, -10000f),
+                new Vector3f(10000f, 10000f, 10000f),
+                PhysicsSpace.BroadphaseType.DBVT, instance, systems);
     }
 
     public BulletSystem(EntityData entityData, Vector3f worldMin, Vector3f worldMax,
-                        PhysicsSpace.BroadphaseType broadphaseType, PhysicsSystem... systems){
+                        PhysicsSpace.BroadphaseType broadphaseType, int instance, PhysicsSystem... systems){
+        if(instance > 0){
+            this.instanceFilter = new PhysicsInstanceFilter(instance);
+        }
+
         this.entityData = entityData;
         this.broadphaseType = broadphaseType;
         this.worldMin = worldMin;
         this.worldMax = worldMax;
 
         physicsSpace = new PhysicsSpace(worldMin, worldMax, broadphaseType);
-        rigidBodies = new RigidBodyContainer(entityData, physicsSpace);
-        ghostObjects = new GhostObjectContainer(entityData, physicsSpace);
+
+        if(instanceFilter == null) {
+            rigidBodies = new RigidBodyContainer(entityData, physicsSpace);
+            ghostObjects = new GhostObjectContainer(entityData, physicsSpace);
+        }else{
+            rigidBodies = new RigidBodyContainer(entityData, physicsSpace, instanceFilter);
+            ghostObjects = new GhostObjectContainer(entityData, physicsSpace, instanceFilter);
+        }
 
         physicsSpace.addTickListener(this);
         //physicsSpace.addCollisionObject();
@@ -116,6 +135,10 @@ public final class BulletSystem implements PhysicsTickListener{
 
     public GhostObjectContainer getGhostObjects() {
         return ghostObjects;
+    }
+
+    public PhysicsInstanceFilter getInstanceFilter() {
+        return instanceFilter;
     }
 
     /**

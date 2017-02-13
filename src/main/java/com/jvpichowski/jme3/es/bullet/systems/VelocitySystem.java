@@ -5,13 +5,12 @@ import com.jme3.bullet.PhysicsTickListener;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
 import com.jvpichowski.jme3.es.bullet.BulletSystem;
+import com.jvpichowski.jme3.es.bullet.PhysicsInstanceFilter;
 import com.jvpichowski.jme3.es.bullet.PhysicsSystem;
 import com.jvpichowski.jme3.es.bullet.RigidBodyContainer;
 import com.jvpichowski.jme3.es.bullet.components.AngularVelocity;
 import com.jvpichowski.jme3.es.bullet.components.LinearVelocity;
-import com.simsilica.es.EntityData;
-import com.simsilica.es.EntityId;
-import com.simsilica.es.EntitySet;
+import com.simsilica.es.*;
 
 /**
  * Created by jan on 12.02.2017.
@@ -27,8 +26,14 @@ public final class VelocitySystem implements PhysicsSystem, PhysicsTickListener 
     public void initialize(EntityData entityData, BulletSystem bulletSystem) {
         this.entityData = entityData;
         rigidBodies = bulletSystem.getRigidBodies();
-        linearVelocities = entityData.getEntities(LinearVelocity.class);
-        angularVelocities = entityData.getEntities(AngularVelocity.class);
+        PhysicsInstanceFilter filter = bulletSystem.getInstanceFilter();
+        if(filter == null) {
+            linearVelocities = entityData.getEntities(LinearVelocity.class);
+            angularVelocities = entityData.getEntities(AngularVelocity.class);
+        }else{
+            linearVelocities = entityData.getEntities(filter, filter.getComponentType(), LinearVelocity.class);
+            angularVelocities = entityData.getEntities(filter, filter.getComponentType(), AngularVelocity.class);
+        }
         bulletSystem.getPhysicsSpace().addTickListener(this);
     }
 
