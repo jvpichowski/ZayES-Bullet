@@ -34,9 +34,9 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.jvpichowski.jme3.examples;
+package com.jvpichowski.examples;
 
-import com.jvpichowski.jme3.examples.es.bullet.BasicExample;
+import com.jvpichowski.examples.es.bullet.BasicExample;
 
 /**
  *

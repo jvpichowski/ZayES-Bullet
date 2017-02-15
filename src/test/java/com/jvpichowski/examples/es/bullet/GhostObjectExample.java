@@ -1,4 +1,4 @@
-package com.jvpichowski.jme3.examples.es.bullet;
+package com.jvpichowski.examples.es.bullet;
 
 import com.jme3.app.FlyCamAppState;
 import com.jme3.app.SimpleApplication;
@@ -10,7 +10,6 @@ import com.jme3.math.Plane;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jvpichowski.jme3.es.bullet.components.*;
-import com.jvpichowski.jme3.states.CameraPostionPrinter;
 import com.jvpichowski.jme3.states.ESBulletState;
 import com.simsilica.es.*;
 import com.simsilica.es.base.DefaultEntityData;

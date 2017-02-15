@@ -1,4 +1,4 @@
-package com.jvpichowski.jme3.examples.es.bullet;
+package com.jvpichowski.examples.es.bullet;
 
 import com.jme3.app.FlyCamAppState;
 import com.jme3.app.SimpleApplication;

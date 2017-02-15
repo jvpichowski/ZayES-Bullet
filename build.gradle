@@ -3,7 +3,7 @@ apply plugin: 'application'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 
-mainClassName='com.jvpichowski.jme3.examples.Main'
+//mainClassName='com.jvpichowski.jme3.examples.Main'
 
 repositories {
     //This is where jme3 dependencies are stored.
@@ -20,7 +20,7 @@ repositories {
 
 }
 
-ext.jmeVersion = '3.1.0-beta3'
+ext.jmeVersion = '3.1.0-stable'
 
 project(":assets") {
     apply plugin: "java"
