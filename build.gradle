@@ -123,35 +123,6 @@ dependencies {
 task wrapper(type: Wrapper) {
 }
 
-task createDirs << {
-
-    def pkg = 'examples'
-    def dirs = [
-        file("./src/main/java/$pkg"),
-        file("./src/main/resources"),
-        file("./assets/Interface"),
-        file("./assets/MatDefs"),
-        file("./assets/Materials"),
-        file("./assets/Models"),
-        file("./assets/Scenes"),
-        file("./assets/Shaders"),
-        file("./assets/Sounds"),
-        file("./assets/Textures"),
-    ]
-
-    dirs.each {
-        if( !it.exists() ) {
-            println "Creating " + it
-            it.mkdirs()
-        }
-        if( it.listFiles().length == 0 ) {
-            def stub = new File(it, 'removeme.txt')
-            println "Creating stub file to allow git checkin, file:$stub"
-            stub.text = "Remove me when there are files here."
-        }
-    }
-}
-
 // Configuration to produce maven-repo style -sources and -javadoc jars
 task sourcesJar(type: Jar) {
     classifier = 'sources'
@@ -166,18 +137,8 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 bintray {
     user = 'jvpichowski'
     key = bintrayKey
+    publications = ['MyPublication']
 
-    // configurations = ['archives']
-
-    //configurations = ['deployables'] //When uploading configuration files
-    // - OR -
-    publications = ['MyPublication'] //When uploading Maven-based publication files
-    // - AND/OR -
-    //filesSpec { //When uploading any arbitrary files ('filesSpec' is a standard Gradle CopySpec)
-       // from 'arbitrary-files'
-        //into 'standalone_files/level1'
-        //rename '(.+)\\.(.+)', '$1-suffix.$2'
-    //}
     dryRun = false //[Default: false] Whether to run this as dry-run, without deploying
     publish = true //[Default: false] Whether version should be auto published after an upload
     override = true //[Default: false] Whether to override version artifacts already published
@@ -191,7 +152,7 @@ bintray {
         issueTrackerUrl = 'https://github.com/jvpichowski/jME3BulletES/issues'
         vcsUrl = 'https://github.com/jvpichowski/jME3BulletES.git'
         licenses = ['BSD 3-Clause']
-        labels = ['jME3', 'bullet', 'ZayES']
+        labels = ['jME3', 'Bullet', 'ZayES']
         publicDownloadNumbers = false
         //attributes= ['a': ['ay1', 'ay2'], 'b': ['bee'], c: 'cee'] //Optional package-level attributes
 
