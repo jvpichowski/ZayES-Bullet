@@ -1,9 +1,27 @@
+plugins {
+    id "com.jfrog.bintray" version "1.7.3"
+}
+
 apply plugin: 'java'
 apply plugin: 'application'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
 
-//mainClassName='com.jvpichowski.jme3.examples.Main'
+def bintrayKey = ''
+
+def projectDesc = 'Contains bindings to native Bullet for ZayES'
+def projectName = name
+
+def versionDesc= 'This release conatins the basic functionalities and hooks for extending this library.'
+def projectVersion = '0.1.0'
+
+
+mainClassName='com.jvpichowski.jme3.examples.Main'
+
+group ='com.jvpichowski'
+version = projectVersion
 
 repositories {
     //This is where jme3 dependencies are stored.
@@ -17,8 +35,8 @@ repositories {
 
     //Uncomment this if you use jme3-niftygui
     //maven{url 'http://nifty-gui.sourceforge.net/nifty-maven-repo'}
-
 }
+
 
 ext.jmeVersion = '3.1.0-stable'
 
@@ -36,6 +54,40 @@ project(":assets") {
     }
 }
 
+// Create the pom configuration:
+def pomConfig = {
+    licenses {
+        license {
+            name "BSD 3-Clause"
+            url "http://opensource.org/licenses/BSD-3-Clause"
+            distribution "repo"
+        }
+    }
+    developers {
+        developer {
+            id "jvpichowski"
+            name "Jan von Pichowski"
+            //email "...@gmail.com"
+        }
+    }
+}
+
+publishing {
+    publications {
+        MyPublication(MavenPublication) {
+            artifact jar
+            artifact sourcesJar
+            artifact javadocJar
+            pom.withXml {
+                def root = asNode()
+                root.appendNode('description', projectDesc)
+                root.appendNode('name', projectName)
+                root.appendNode('url', 'https://github.com/jvpichowski/jME3BulletES')
+                root.children().last() + pomConfig
+            }
+        }
+    }
+}
 
 dependencies {
 
@@ -99,3 +151,73 @@ task createDirs << {
         }
     }
 }
+
+// Configuration to produce maven-repo style -sources and -javadoc jars
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+bintray {
+    user = 'jvpichowski'
+    key = bintrayKey
+
+    // configurations = ['archives']
+
+    //configurations = ['deployables'] //When uploading configuration files
+    // - OR -
+    publications = ['MyPublication'] //When uploading Maven-based publication files
+    // - AND/OR -
+    //filesSpec { //When uploading any arbitrary files ('filesSpec' is a standard Gradle CopySpec)
+       // from 'arbitrary-files'
+        //into 'standalone_files/level1'
+        //rename '(.+)\\.(.+)', '$1-suffix.$2'
+    //}
+    dryRun = false //[Default: false] Whether to run this as dry-run, without deploying
+    publish = true //[Default: false] Whether version should be auto published after an upload
+    override = true //[Default: false] Whether to override version artifacts already published
+    //Package configuration. The plugin will use the repo and name properties to check if the package already exists. In that case, there's no need to configure the other package properties (like userOrg, desc, etc).
+    pkg {
+        repo = 'jME3-Tools'
+        name = projectName
+        //userOrg = 'jvpichowski' //An optional organization name when the repo belongs to one of the user's orgs
+        desc = projectDesc
+        websiteUrl = 'https://github.com/jvpichowski/jME3BulletES'
+        issueTrackerUrl = 'https://github.com/jvpichowski/jME3BulletES/issues'
+        vcsUrl = 'https://github.com/jvpichowski/jME3BulletES.git'
+        licenses = ['BSD 3-Clause']
+        labels = ['jME3', 'bullet', 'ZayES']
+        publicDownloadNumbers = false
+        //attributes= ['a': ['ay1', 'ay2'], 'b': ['bee'], c: 'cee'] //Optional package-level attributes
+
+        githubRepo = 'jvpichowski/jME3BulletES' //Optional Github repository
+        //githubReleaseNotesFile = 'README.md' //Optional Github readme file
+
+        //Optional version descriptor
+        version {
+            name = projectVersion //Bintray logical version name
+            desc = versionDesc//Optional - Version-specific description'
+            released  = new Date()
+            vcsTag = projectVersion
+            //attributes = ['gradle-plugin': 'com.use.less:com.use.less.gradle:gradle-useless-plugin'] //Optional version-level attributes
+            //Optional configuration for GPG signing
+            gpg {
+                sign = true //Determines whether to GPG sign the files. The default is false
+                //passphrase = 'passphrase' //Optional. The passphrase for GPG signing'
+            }
+            //Optional configuration for Maven Central sync of the version
+            //mavenCentralSync {
+                //sync = false //[Default: true] Determines whether to sync the version to Maven Central.
+                //user = 'userToken' //OSS user token: mandatory
+                //password = 'paasword' //OSS user password: mandatory
+                //close = '1' //Optional property. By default the staging repository is closed and artifacts are released to Maven Central. You can optionally turn this behaviour off (by puting 0 as value) and release the version manually.
+            //}
+        }
+    }
+}
+
