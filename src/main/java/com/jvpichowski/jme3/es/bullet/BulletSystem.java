@@ -3,7 +3,6 @@ package com.jvpichowski.jme3.es.bullet;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.PhysicsTickListener;
 import com.jme3.math.Vector3f;
-import com.jvpichowski.jme3.es.bullet.character.CharacterSystem;
 import com.jvpichowski.jme3.es.bullet.systems.*;
 import com.simsilica.es.*;
 

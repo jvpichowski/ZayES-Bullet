@@ -15,7 +15,7 @@ def projectDesc = 'Contains bindings to native Bullet for ZayES'
 def projectName = name
 
 def versionDesc= 'This release conatins the basic functionalities and hooks for extending this library.'
-def projectVersion = '0.1.0'
+def projectVersion = '0.1.1'
 
 
 mainClassName='com.jvpichowski.jme3.examples.Main'
