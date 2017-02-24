@@ -14,7 +14,8 @@ import com.simsilica.es.EntityData;
 import com.simsilica.es.EntitySet;
 
 /**
- * Created by jan on 12.02.2017.
+ * Applies the various forces and torques to the rigid body objects.
+ * Afterwards they will be removed from the component.
  */
 public final class ForceSystem implements PhysicsSystem, PhysicsTickListener {
 

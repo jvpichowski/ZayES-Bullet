@@ -3,7 +3,11 @@ package com.jvpichowski.jme3.es.bullet.components;
 import com.simsilica.es.EntityComponent;
 
 /**
- * Created by Jan on 30.01.2017.
+ * Every physics object needs a collision shape.
+ * Only if an entity has this component it can be added to the physics space.
+ *
+ * Warning: It could be possible that I remove this component in favor for
+ * concrete shape components.
  */
 public final class CollisionShape implements EntityComponent {
 

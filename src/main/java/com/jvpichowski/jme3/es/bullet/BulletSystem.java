@@ -3,6 +3,7 @@ package com.jvpichowski.jme3.es.bullet;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.PhysicsTickListener;
 import com.jme3.math.Vector3f;
+import com.jvpichowski.jme3.es.bullet.character.CharacterSystem;
 import com.jvpichowski.jme3.es.bullet.systems.*;
 import com.simsilica.es.*;
 
@@ -11,7 +12,8 @@ import java.util.List;
 
 
 /**
- * Created by Jan on 30.01.2017.
+ * The main system. Create an instance and call update to update
+ * the physics simulation. Don't forget to call destroy in the end.
  */
 public final class BulletSystem implements PhysicsTickListener{
 
@@ -88,6 +90,7 @@ public final class BulletSystem implements PhysicsTickListener{
             physicsSystems.add(new GravitySystem());
             physicsSystems.add(new VelocitySystem());
             physicsSystems.add(new ImpulseSystem());
+            physicsSystems.add(new RigidBodyPropertySystem());
         }else{
             for(PhysicsSystem system : systems){
                 physicsSystems.add(system);
@@ -97,6 +100,11 @@ public final class BulletSystem implements PhysicsTickListener{
         physicsSystems.forEach(physicsSystem -> physicsSystem.initialize(entityData, this));
     }
 
+    /**
+     * update the physics simulation
+     *
+     * @param time
+     */
     public void update(float time){
         if(physicsSpace == null){
             throw new IllegalStateException("BulletSystem is already destroyed!");
@@ -107,6 +115,9 @@ public final class BulletSystem implements PhysicsTickListener{
         physicsSpace.distributeEvents();
     }
 
+    /**
+     * destroy the physics simulation
+     */
     public void destroy(){
         physicsSystems.forEach(physicsSystem -> physicsSystem.destroy(entityData, this));
 
@@ -119,9 +130,33 @@ public final class BulletSystem implements PhysicsTickListener{
     }
 
     /**
+     * Add a sub physics system which could be hooked in the life cycle
+     * of this physics space.
+     *
+     * @param physicsSystem
+     */
+    public void addPhysicsSystem(PhysicsSystem physicsSystem){
+        physicsSystem.initialize(entityData, this);
+        physicsSystems.add(physicsSystem);
+    }
+
+    /**
+     * Remove a sub physics system
+     *
+     * @param physicsSystem
+     */
+    public void removePhysicsSystem(PhysicsSystem physicsSystem){
+        if(physicsSystems.remove(physicsSystem)){
+            physicsSystem.destroy(entityData, this);
+        }
+    }
+
+    /**
      * For debugging with BulletDebugAppState or advanced behavior.
      * E.G. attach your own event listeners and so on.
-     * Be aware that every physics object has an EntityId as UserObject attached.
+     * Be aware that every physics object should have an EntityId as UserObject attached.
+     * Let the bullet system handle the creation of physics objects and use
+     * the physics space read only.
      *
      * @return
      */
@@ -129,14 +164,30 @@ public final class BulletSystem implements PhysicsTickListener{
         return physicsSpace;
     }
 
+    /**
+     * Obtain a collection of all rigid bodies.
+     *
+     * @return
+     */
     public RigidBodyContainer getRigidBodies() {
         return rigidBodies;
     }
 
+    /**
+     * Obtain a collection of all ghost objects
+     *
+     * @return
+     */
     public GhostObjectContainer getGhostObjects() {
         return ghostObjects;
     }
 
+    /**
+     * Get the instance filter for this bullet system. If you are unsure whether
+     * an entity belongs to this system use the filter.
+     *
+     * @return the insatnce filter or null if there is only one bullet system
+     */
     public PhysicsInstanceFilter getInstanceFilter() {
         return instanceFilter;
     }

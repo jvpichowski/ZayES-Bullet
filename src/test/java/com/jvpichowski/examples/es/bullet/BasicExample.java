@@ -36,6 +36,13 @@ public class BasicExample extends SimpleApplication {
     @Override
     public void simpleInitApp() {
         //Add some entities
+        //You need these base components to create a physics entity.
+        //Warning: the PhysicsPosition component is only a setter if the entity
+        //is added the first time to the physics space. I don't like this
+        //behavior and will make it soon completely a read only component.
+        //Instead I will add a warp component to manually change the physics position.
+        //Combined with these changes I will refactor the systems to only
+        //listen for changes and not pulling every component.
         EntityId plane = entityData.createEntity();
         entityData.setComponents(plane,
                 new PhysicsPosition(new Vector3f(), Quaternion.DIRECTION_Z.clone()),
@@ -55,7 +62,7 @@ public class BasicExample extends SimpleApplication {
                 new CollisionShape(new BoxCollisionShape(new Vector3f(0.5f,0.5f,0.5f))));
 
         //uncomment this line and notice the difference
-        entityData.setComponent(box, new Force(new Vector3f(100,100,100), new Vector3f()));
+        //entityData.setComponent(box, new Force(new Vector3f(100,100,100), new Vector3f()));
     }
 
     @Override

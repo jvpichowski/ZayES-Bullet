@@ -11,7 +11,7 @@ import com.simsilica.es.EntityId;
 import com.simsilica.es.EntitySet;
 
 /**
- * Created by jan on 12.02.2017.
+ * Copies the physics position to the entities every physics tick.
  */
 public final class PhysicsPositionSystem implements PhysicsSystem, PhysicsTickListener {
 

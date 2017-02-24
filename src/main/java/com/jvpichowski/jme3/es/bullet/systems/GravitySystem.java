@@ -13,7 +13,7 @@ import com.simsilica.es.EntityId;
 import com.simsilica.es.EntitySet;
 
 /**
- * Created by jan on 12.02.2017.
+ * Applies the gravity components to the rigid bodies.
  */
 public final class GravitySystem implements PhysicsSystem, PhysicsTickListener {
 

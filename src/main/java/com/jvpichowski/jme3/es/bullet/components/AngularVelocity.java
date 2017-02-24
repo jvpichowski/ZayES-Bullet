@@ -4,7 +4,8 @@ import com.jme3.math.Vector3f;
 import com.simsilica.es.EntityComponent;
 
 /**
- * Created by Jan on 08.02.2017.
+ * Read this component to obtain the angular velocity of the physics object.
+ * It is updated every physics tick.
  */
 public final class AngularVelocity implements EntityComponent {
 

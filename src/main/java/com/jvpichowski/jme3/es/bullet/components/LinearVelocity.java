@@ -4,7 +4,11 @@ import com.jme3.math.Vector3f;
 import com.simsilica.es.EntityComponent;
 
 /**
- * Created by Jan on 08.02.2017.
+ * Get the linear velocity of a physics object. This
+ * is only a getter and it has no impact on the
+ * physics system if you change it. Be aware that
+ * other systems might depend on this component
+ * if you consider to overwrite this component.
  */
 public final class LinearVelocity implements EntityComponent{
 

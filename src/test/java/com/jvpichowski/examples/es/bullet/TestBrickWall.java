@@ -136,6 +136,7 @@ public class TestBrickWall  extends SimpleApplication {
         entityData.setComponents(floorEntity,
                 new PhysicsPosition(new Vector3f(0, -0.1f, 0), Quaternion.DIRECTION_Z.clone()),
                 new RigidBody(false, 0),
+                new Friction(0.6f),
                 new CollisionShape(new BoxCollisionShape(new Vector3f(10f, 0.1f, 5f))),
                 new BoxComponent(new Vector3f(10f, 0.1f, 5f)),
                 new MaterialComponent(mat));
@@ -159,7 +160,8 @@ public class TestBrickWall  extends SimpleApplication {
         entityData.setComponents(boxEntity,
                 new PhysicsPosition(ori.clone(), Quaternion.DIRECTION_Z.clone()),
                 new CollisionShape(new BoxCollisionShape(new Vector3f(bLength, bHeight, bWidth))),
-                new RigidBody(false, 1.5f, 0.6f, 0),
+                new RigidBody(false, 1.5f, 0),
+                new Friction(0.6f),
                 new MaterialComponent(brickMat),
                 new BoxComponent(new Vector3f(bLength, bHeight, bWidth)));
     }

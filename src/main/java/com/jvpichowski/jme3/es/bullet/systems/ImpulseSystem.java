@@ -14,7 +14,8 @@ import com.simsilica.es.EntityId;
 import com.simsilica.es.EntitySet;
 
 /**
- * Created by jan on 13.02.2017.
+ * Applies the linear impulses and torque impulses to the rigid bodies.
+ * Afterwards they will be removed from the entity.
  */
 public final class ImpulseSystem implements PhysicsSystem, PhysicsTickListener {
 

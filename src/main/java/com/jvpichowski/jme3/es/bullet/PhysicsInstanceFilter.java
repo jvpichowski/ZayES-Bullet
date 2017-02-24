@@ -5,7 +5,9 @@ import com.simsilica.es.ComponentFilter;
 import com.simsilica.es.EntityComponent;
 
 /**
- * Created by jan on 14.02.2017.
+ * This system isn't fully integrated. Later it will be possible to have multiple
+ * bullet systems which use this filter to determine if the entity belongs to them.
+ * As a consequence every subsystem has to use this entity filter.
  */
 public final class PhysicsInstanceFilter implements ComponentFilter<PhysicsInstance> {
 

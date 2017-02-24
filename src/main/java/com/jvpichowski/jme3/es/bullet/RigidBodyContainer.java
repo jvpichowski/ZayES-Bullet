@@ -9,7 +9,7 @@ import com.simsilica.es.EntityContainer;
 import com.simsilica.es.EntityData;
 
 /**
- * Created by Jan on 08.02.2017.
+ * Contains a collection of rigid bodies.
  */
 public final class RigidBodyContainer extends EntityContainer<PhysicsRigidBody> {
 
@@ -33,7 +33,7 @@ public final class RigidBodyContainer extends EntityContainer<PhysicsRigidBody> 
         PhysicsRigidBody rigidBody = new PhysicsRigidBody(collisionShapeInfo.getCollisionShape(), rigidBodyInfo.getMass());
         rigidBody.setMass(rigidBodyInfo.getMass());
         rigidBody.setKinematic(rigidBodyInfo.isKinematic());
-        rigidBody.setFriction(rigidBodyInfo.getFriction());
+        //rigidBody.setFriction(rigidBodyInfo.getFriction());
         rigidBody.setRestitution(rigidBodyInfo.getRestitution());
         rigidBody.setUserObject(e.getId());
         physicsSpace.add(rigidBody);
@@ -46,7 +46,7 @@ public final class RigidBodyContainer extends EntityContainer<PhysicsRigidBody> 
         CollisionShape collisionShapeInfo = e.get(CollisionShape.class);
         rigidBody.setKinematic(rigidBodyInfo.isKinematic());
         rigidBody.setMass(rigidBodyInfo.getMass());
-        rigidBody.setFriction(rigidBodyInfo.getFriction());
+        //rigidBody.setFriction(rigidBodyInfo.getFriction());
         rigidBody.setRestitution(rigidBodyInfo.getRestitution());
         if(!rigidBody.getCollisionShape().equals(collisionShapeInfo.getCollisionShape())) {
             physicsSpace.remove(rigidBody);

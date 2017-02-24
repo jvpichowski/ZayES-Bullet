@@ -19,7 +19,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Created by jan on 13.02.2017.
+ * Creates new collision component if two physics objects overlap.
  */
 public final class CollisionSystem implements PhysicsSystem, PhysicsCollisionListener, PhysicsTickListener {
 

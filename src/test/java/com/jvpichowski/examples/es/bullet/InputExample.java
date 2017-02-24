@@ -26,7 +26,6 @@ import com.simsilica.es.base.DefaultEntityData;
 public class InputExample extends SimpleApplication {
 
     public static void main(String[] args) {
-        System.out.println("Press and hold SPACE to move box up!");
         EntityData entityData = new DefaultEntityData();
         InputExample app = new InputExample(entityData);
         app.start();
@@ -41,6 +40,7 @@ public class InputExample extends SimpleApplication {
 
     @Override
     public void simpleInitApp() {
+        System.out.println("Press and hold SPACE to move box up!");
         //Add some entities
         EntityId plane = entityData.createEntity();
         entityData.setComponents(plane,

@@ -6,10 +6,15 @@ import com.jme3.bullet.PhysicsSpace;
 import com.jvpichowski.jme3.es.bullet.BulletSystem;
 import com.simsilica.es.EntityData;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  *
- *
- * Created by Jan on 06.02.2017.
+ * This is a very simple wrapper for the bullet system to easily attach
+ * it to the application life cycle. It will call update every frame.
+ * As a result the physics ticks won't be at a fixed rate.
+ * Also it is not possible to use multithreaded physics yet.
  */
 public final class ESBulletState extends BaseAppState {
 
@@ -18,6 +23,9 @@ public final class ESBulletState extends BaseAppState {
     private EntityData entityData;
     private BulletSystem bulletSystem;
 
+    private boolean finishedInit = false;
+    private List<Runnable> initTasks = new LinkedList<>();
+
     public ESBulletState(EntityData entityData) {
         this.entityData = entityData;
     }
@@ -25,6 +33,9 @@ public final class ESBulletState extends BaseAppState {
     @Override
     protected void initialize(Application app) {
         bulletSystem = new BulletSystem(entityData);
+        finishedInit = true;
+        initTasks.forEach(Runnable::run);
+        initTasks = null;
     }
 
     @Override
@@ -42,6 +53,23 @@ public final class ESBulletState extends BaseAppState {
 
     public PhysicsSpace getPhysicsSpace(){
         return bulletSystem.getPhysicsSpace();
+    }
+
+    public BulletSystem getBulletSystem() {
+        return bulletSystem;
+    }
+
+    /**
+     *
+     * @param task
+     * @return true if state was already initialized.
+     */
+    public boolean onInitialize(Runnable task){
+        if(finishedInit){
+            return false;
+        }
+        initTasks.add(task);
+        return false;
     }
 
     @Override

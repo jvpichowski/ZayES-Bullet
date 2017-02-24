@@ -4,7 +4,11 @@ import com.jme3.math.Vector3f;
 import com.simsilica.es.EntityComponent;
 
 /**
- * Created by Jan on 08.02.2017.
+ * Apply the torque to a RigidBody.
+ * The torque will be applied in the next physics tick
+ * and then removed from the entity.
+ * Be aware that a torque consists of a moment of inertia
+ * and angular acceleration.
  */
 public final class Torque implements EntityComponent{
 

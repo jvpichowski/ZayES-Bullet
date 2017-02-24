@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Created by Jan on 09.02.2017.
+ * Obtain a list of collisions for this entity.
+ * It is updated every physics tick.
  */
 public final class Collision implements EntityComponent{
 
@@ -17,6 +18,11 @@ public final class Collision implements EntityComponent{
         this.collisions = collisions;
     }
 
+    /**
+     * Don't change the content of this set. Read it only.
+     *
+     * @return
+     */
     public Set<EntityId> getCollisions() {
         return collisions;
     }

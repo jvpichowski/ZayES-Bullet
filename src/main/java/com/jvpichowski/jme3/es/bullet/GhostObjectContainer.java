@@ -9,7 +9,7 @@ import com.simsilica.es.EntityContainer;
 import com.simsilica.es.EntityData;
 
 /**
- * Created by jan on 10.02.2017.
+ * Contains a collection of all rigid bodies.
  */
 public final class GhostObjectContainer extends EntityContainer<PhysicsGhostObject> {
 

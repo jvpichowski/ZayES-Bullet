@@ -4,7 +4,8 @@ import com.jme3.math.Vector3f;
 import com.simsilica.es.EntityComponent;
 
 /**
- * Created by Jan on 08.02.2017.
+ * Apply the torque impulse once to a RigidBody. Every torque impulse
+ * will be added in the next physics tick and removed afterwards.
  */
 public final class TorqueImpulse implements EntityComponent {
 

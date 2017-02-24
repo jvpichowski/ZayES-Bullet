@@ -3,7 +3,13 @@ package com.jvpichowski.jme3.es.bullet.components;
 import com.simsilica.es.EntityComponent;
 
 /**
- * Created by jan on 14.02.2017.
+ * This component isn't fully integrated. Later it will be
+ * possible to have multiple physics spaces and bullet systems.
+ * If no instance if this component is added to an entity it
+ * will be added to the default physics system (possible now).
+ * If a instance of this component is added to an entity it
+ * will be added to the bullet system with the instance number
+ * (not fully possible now).
  */
 public final class PhysicsInstance implements EntityComponent {
 

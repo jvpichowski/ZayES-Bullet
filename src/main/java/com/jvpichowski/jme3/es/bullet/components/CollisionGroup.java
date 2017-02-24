@@ -5,7 +5,12 @@ import com.simsilica.es.EntityComponent;
 
 
 /**
- * Created by jan on 13.02.2017.
+ * Set the collision group of a physics entity.
+ * There exists no collision component for special groups
+ * but they will be added later. For now you have to listen
+ * manually for special group collisions. Obtain an instance
+ * of the physics space and add a listener to it. the EntityId will
+ * be present in the user object.
  */
 public final class CollisionGroup implements EntityComponent {
 

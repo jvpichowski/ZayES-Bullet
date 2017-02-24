@@ -13,7 +13,7 @@ import com.jvpichowski.jme3.es.bullet.components.LinearVelocity;
 import com.simsilica.es.*;
 
 /**
- * Created by jan on 12.02.2017.
+ * Copies the velocity of the rigid bodies to the entity every physics tick.
  */
 public final class VelocitySystem implements PhysicsSystem, PhysicsTickListener {
 

@@ -4,7 +4,8 @@ import com.jme3.math.Vector3f;
 import com.simsilica.es.EntityComponent;
 
 /**
- * Created by Jan on 08.02.2017.
+ * Set a central force to a physics object. It will be applied in the next physics tick
+ * and then removed from the entity.
  */
 public final class CentralForce implements EntityComponent {
 
