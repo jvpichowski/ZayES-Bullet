@@ -27,6 +27,6 @@ interface CollisionShapeProvider <T extends EntityComponent> {
     }
 
     static CollisionShapeProvider<BoxShape> boxShapeProvider(){
-        return definition -> new BoxCollisionShape(definition.getHalfExtends());
+        return definition -> new BoxCollisionShape(definition.getHalfExtents());
     }
 }

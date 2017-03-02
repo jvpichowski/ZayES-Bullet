@@ -21,7 +21,7 @@ public final class BoxShape implements EntityComponent {
         this(new Vector3f(0.5f,0.5f,0.5f));
     }
 
-    public Vector3f getHalfExtends() {
+    public Vector3f getHalfExtents() {
         return halfExtends;
     }
 }
