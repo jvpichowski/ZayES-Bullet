@@ -1,4 +1,4 @@
-package com.jvpichowski.jme3.states.bullet;
+package com.jvpichowski.jme3.states;
 
 import com.jme3.app.Application;
 import com.jme3.app.state.BaseAppState;

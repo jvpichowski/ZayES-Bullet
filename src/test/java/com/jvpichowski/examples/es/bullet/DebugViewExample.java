@@ -5,13 +5,9 @@ import com.jme3.app.SimpleApplication;
 import com.jme3.bullet.collision.shapes.SphereCollisionShape;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import com.jvpichowski.jme3.es.bullet.CollisionShapeFactory;
-import com.jvpichowski.jme3.es.bullet.components.BoxShape;
-import com.jvpichowski.jme3.es.bullet.components.CustomShape;
-import com.jvpichowski.jme3.es.bullet.components.PhysicsPosition;
-import com.jvpichowski.jme3.es.bullet.components.RigidBody;
+import com.jvpichowski.jme3.es.bullet.components.*;
 import com.jvpichowski.jme3.states.ESBulletState;
-import com.jvpichowski.jme3.states.bullet.DebugViewState;
+import com.jvpichowski.jme3.states.DebugViewState;
 import com.simsilica.es.EntityData;
 import com.simsilica.es.EntityId;
 import com.simsilica.es.base.DefaultEntityData;
@@ -46,13 +42,12 @@ public class DebugViewExample extends SimpleApplication {
         entityData.setComponents(sphere,
                 new CustomShape(new SphereCollisionShape(0.5f)),
                 new RigidBody(false, 10),
-                new PhysicsPosition(new Vector3f(0, 15, 0), Quaternion.DIRECTION_Z.clone()));
+                new WarpPosition(new Vector3f(0, 15, 0), Quaternion.DIRECTION_Z.clone()));
 
         EntityId box = entityData.createEntity();
         entityData.setComponents(box,
                 new BoxShape(new Vector3f(5f, 0.1f, 5f)),
-                new RigidBody(false, 0),
-                new PhysicsPosition(new Vector3f(), new Quaternion()));
+                new RigidBody(false, 0));
     }
 
 }

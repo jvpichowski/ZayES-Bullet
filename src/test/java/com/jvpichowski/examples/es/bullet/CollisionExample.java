@@ -42,23 +42,21 @@ public class CollisionExample extends SimpleApplication {
         //Add some entities
         EntityId plane = entityData.createEntity();
         entityData.setComponents(plane,
-                new PhysicsPosition(new Vector3f(), Quaternion.DIRECTION_Z.clone()),
                 new RigidBody(false, 0),
                 new CustomShape(new PlaneCollisionShape(new Plane(Vector3f.UNIT_Y.clone(), 0))),
                 new Name("floor"));
 
         EntityId box = entityData.createEntity();
         entityData.setComponents(box,
-                new PhysicsPosition(new Vector3f(0,10,0), Quaternion.DIRECTION_Z.clone()),
+                new WarpPosition(new Vector3f(0,10,0), Quaternion.DIRECTION_Z.clone()),
                 new RigidBody(false, 10),
-                new CustomShape(new BoxCollisionShape(new Vector3f(0.5f,0.5f,0.5f))),
+                new BoxShape(),
                 new Name("box1"));
 
         EntityId box2 = entityData.createEntity();
         entityData.setComponents(box2,
-                new PhysicsPosition(new Vector3f(0,0,0), Quaternion.DIRECTION_Z.clone()),
                 new RigidBody(false, 0),
-                new CustomShape(new BoxCollisionShape(new Vector3f(0.5f,0.5f,0.5f))),
+                new BoxShape(),
                 new Name("box2"));
 
         entityData.setComponent(box, new Force(new Vector3f(100,100,100), new Vector3f()));

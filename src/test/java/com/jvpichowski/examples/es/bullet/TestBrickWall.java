@@ -134,10 +134,10 @@ public class TestBrickWall  extends SimpleApplication {
         mat.setColor("Color", ColorRGBA.Brown);
         EntityId floorEntity = entityData.createEntity();
         entityData.setComponents(floorEntity,
-                new PhysicsPosition(new Vector3f(0, -0.1f, 0), Quaternion.DIRECTION_Z.clone()),
+                new WarpPosition(new Vector3f(0, -0.1f, 0), Quaternion.DIRECTION_Z.clone()),
                 new RigidBody(false, 0),
                 new Friction(0.6f),
-                new CustomShape(new BoxCollisionShape(new Vector3f(10f, 0.1f, 5f))),
+                new BoxShape(new Vector3f(10f, 0.1f, 5f)),
                 new BoxComponent(new Vector3f(10f, 0.1f, 5f)),
                 new MaterialComponent(mat));
     }
@@ -158,8 +158,8 @@ public class TestBrickWall  extends SimpleApplication {
     public void addBrick(Vector3f ori) {
         EntityId boxEntity = entityData.createEntity();
         entityData.setComponents(boxEntity,
-                new PhysicsPosition(ori.clone(), Quaternion.DIRECTION_Z.clone()),
-                new CustomShape(new BoxCollisionShape(new Vector3f(bLength, bHeight, bWidth))),
+                new WarpPosition(ori.clone(), Quaternion.DIRECTION_Z.clone()),
+                new BoxShape(new Vector3f(bLength, bHeight, bWidth)),
                 new RigidBody(false, 1.5f, 0),
                 new Friction(0.6f),
                 new MaterialComponent(brickMat),
@@ -170,9 +170,9 @@ public class TestBrickWall  extends SimpleApplication {
         EntityId bullet = entityData.createEntity();
         entityData.setComponents(bullet, new MaterialComponent(bulletMat),
                 new SphereComponent(0.4f),
-                new PhysicsPosition(cam.getLocation(), Quaternion.DIRECTION_Z.clone()),
-                new LinearVelocity(cam.getDirection().mult(25)),
-                new CustomShape(new SphereCollisionShape(0.4f)),
+                new WarpPosition(cam.getLocation(), Quaternion.DIRECTION_Z.clone()),
+                new WarpVelocity(cam.getDirection().mult(25), new Vector3f()),
+                new SphereShape(0.4f),
                 new RigidBody(false, 1));
     }
 

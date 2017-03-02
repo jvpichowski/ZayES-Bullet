@@ -36,30 +36,21 @@ public class BasicExample extends SimpleApplication {
     @Override
     public void simpleInitApp() {
         //Add some entities
-        //You need these base components to create a physics entity.
-        //Warning: the PhysicsPosition component is only a setter if the entity
-        //is added the first time to the physics space. I don't like this
-        //behavior and will make it soon completely a read only component.
-        //Instead I will add a warp component to manually change the physics position.
-        //Combined with these changes I will refactor the systems to only
-        //listen for changes and not pulling every component.
         EntityId plane = entityData.createEntity();
         entityData.setComponents(plane,
-                new PhysicsPosition(new Vector3f(), Quaternion.DIRECTION_Z.clone()),
                 new RigidBody(false, 0),
                 new CustomShape(new PlaneCollisionShape(new Plane(Vector3f.UNIT_Y.clone(), 0))));
 
         EntityId box = entityData.createEntity();
         entityData.setComponents(box,
-                new PhysicsPosition(new Vector3f(0,10,0), Quaternion.DIRECTION_Z.clone()),
+                new WarpPosition(new Vector3f(0,10,0), Quaternion.DIRECTION_Z.clone()),
                 new RigidBody(false, 10),
-                new CustomShape(new BoxCollisionShape(new Vector3f(0.5f,0.5f,0.5f))));
+                new BoxShape());
 
         EntityId box2 = entityData.createEntity();
         entityData.setComponents(box2,
-                new PhysicsPosition(new Vector3f(0,0,0), Quaternion.DIRECTION_Z.clone()),
                 new RigidBody(false, 0),
-                new CustomShape(new BoxCollisionShape(new Vector3f(0.5f,0.5f,0.5f))));
+                new BoxShape(new Vector3f(0.5f, 0.5f, 0.5f)));
 
         //uncomment this line and notice the difference
         //entityData.setComponent(box, new Force(new Vector3f(100,100,100), new Vector3f()));

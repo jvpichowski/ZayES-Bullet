@@ -46,26 +46,23 @@ public class GhostObjectExample extends SimpleApplication {
         //Add some entities
         EntityId plane = entityData.createEntity();
         entityData.setComponents(plane,
-                new PhysicsPosition(new Vector3f(), Quaternion.DIRECTION_Z.clone()),
                 new RigidBody(false, 0),
                 new CustomShape(new PlaneCollisionShape(new Plane(Vector3f.UNIT_Y.clone(), 0))));
 
         box = entityData.createEntity();
         entityData.setComponents(box,
-                new PhysicsPosition(new Vector3f(0,10,0), Quaternion.DIRECTION_Z.clone()),
+                new WarpPosition(new Vector3f(0,10,0), Quaternion.DIRECTION_Z.clone()),
                 new RigidBody(false, 10),
-                new CustomShape(new BoxCollisionShape(new Vector3f(0.5f,0.5f,0.5f))));
+                new BoxShape());
 
         EntityId box2 = entityData.createEntity();
         entityData.setComponents(box2,
-                new PhysicsPosition(new Vector3f(0,0,0), Quaternion.DIRECTION_Z.clone()),
                 new RigidBody(false, 0),
-                new CustomShape(new BoxCollisionShape(new Vector3f(0.5f,0.5f,0.5f))));
+                new BoxShape());
 
         EntityId ghost = entityData.createEntity();
         entityData.setComponents(ghost,
-                new PhysicsPosition(new Vector3f(0,0,0), Quaternion.DIRECTION_Z.clone()),
-                new CustomShape(new SphereCollisionShape(1f)),
+                new SphereShape(1f),
                 new GhostObject());
 
         //apply some force at the beginning
