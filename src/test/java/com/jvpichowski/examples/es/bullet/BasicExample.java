@@ -47,19 +47,19 @@ public class BasicExample extends SimpleApplication {
         entityData.setComponents(plane,
                 new PhysicsPosition(new Vector3f(), Quaternion.DIRECTION_Z.clone()),
                 new RigidBody(false, 0),
-                new CollisionShape(new PlaneCollisionShape(new Plane(Vector3f.UNIT_Y.clone(), 0))));
+                new CustomShape(new PlaneCollisionShape(new Plane(Vector3f.UNIT_Y.clone(), 0))));
 
         EntityId box = entityData.createEntity();
         entityData.setComponents(box,
                 new PhysicsPosition(new Vector3f(0,10,0), Quaternion.DIRECTION_Z.clone()),
                 new RigidBody(false, 10),
-                new CollisionShape(new BoxCollisionShape(new Vector3f(0.5f,0.5f,0.5f))));
+                new CustomShape(new BoxCollisionShape(new Vector3f(0.5f,0.5f,0.5f))));
 
         EntityId box2 = entityData.createEntity();
         entityData.setComponents(box2,
                 new PhysicsPosition(new Vector3f(0,0,0), Quaternion.DIRECTION_Z.clone()),
                 new RigidBody(false, 0),
-                new CollisionShape(new BoxCollisionShape(new Vector3f(0.5f,0.5f,0.5f))));
+                new CustomShape(new BoxCollisionShape(new Vector3f(0.5f,0.5f,0.5f))));
 
         //uncomment this line and notice the difference
         //entityData.setComponent(box, new Force(new Vector3f(100,100,100), new Vector3f()));

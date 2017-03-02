@@ -3,10 +3,9 @@ package com.jvpichowski.jme3.es.bullet.systems;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.PhysicsTickListener;
 import com.jme3.bullet.objects.PhysicsRigidBody;
-import com.jme3.math.Vector3f;
+import com.jvpichowski.jme3.es.ObjectContainer;
 import com.jvpichowski.jme3.es.bullet.BulletSystem;
 import com.jvpichowski.jme3.es.bullet.PhysicsSystem;
-import com.jvpichowski.jme3.es.bullet.RigidBodyContainer;
 import com.jvpichowski.jme3.es.bullet.components.Factor;
 import com.jvpichowski.jme3.es.bullet.components.Friction;
 import com.simsilica.es.EntityData;
@@ -17,7 +16,7 @@ import com.simsilica.es.EntitySet;
  */
 public final class RigidBodyPropertySystem implements PhysicsSystem, PhysicsTickListener {
 
-    private RigidBodyContainer rigidBodies;
+    private ObjectContainer<PhysicsRigidBody> rigidBodies;
     private EntitySet frictions;
     private EntitySet factors;
 

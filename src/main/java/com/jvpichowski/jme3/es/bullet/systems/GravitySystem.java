@@ -3,10 +3,10 @@ package com.jvpichowski.jme3.es.bullet.systems;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.PhysicsTickListener;
 import com.jme3.bullet.objects.PhysicsRigidBody;
+import com.jvpichowski.jme3.es.ObjectContainer;
 import com.jvpichowski.jme3.es.bullet.BulletSystem;
 import com.jvpichowski.jme3.es.bullet.PhysicsInstanceFilter;
 import com.jvpichowski.jme3.es.bullet.PhysicsSystem;
-import com.jvpichowski.jme3.es.bullet.RigidBodyContainer;
 import com.jvpichowski.jme3.es.bullet.components.Gravity;
 import com.simsilica.es.EntityData;
 import com.simsilica.es.EntityId;
@@ -18,7 +18,7 @@ import com.simsilica.es.EntitySet;
 public final class GravitySystem implements PhysicsSystem, PhysicsTickListener {
 
     private EntityData entityData;
-    private RigidBodyContainer rigidBodies;
+    private ObjectContainer<PhysicsRigidBody> rigidBodies;
     private EntitySet gravities;
 
     @Override

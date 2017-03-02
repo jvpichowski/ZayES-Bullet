@@ -12,7 +12,7 @@ import com.jme3.math.Plane;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jvpichowski.jme3.es.bullet.components.RigidBody;
-import com.jvpichowski.jme3.es.bullet.components.CollisionShape;
+import com.jvpichowski.jme3.es.bullet.components.CustomShape;
 import com.jvpichowski.jme3.es.bullet.components.Force;
 import com.jvpichowski.jme3.es.bullet.components.PhysicsPosition;
 import com.jvpichowski.jme3.states.ESBulletState;
@@ -46,19 +46,19 @@ public class InputExample extends SimpleApplication {
         entityData.setComponents(plane,
                 new PhysicsPosition(new Vector3f(), Quaternion.DIRECTION_Z.clone()),
                 new RigidBody(false, 0),
-                new CollisionShape(new PlaneCollisionShape(new Plane(Vector3f.UNIT_Y.clone(), 0))));
+                new CustomShape(new PlaneCollisionShape(new Plane(Vector3f.UNIT_Y.clone(), 0))));
 
         EntityId box = entityData.createEntity();
         entityData.setComponents(box,
                 new PhysicsPosition(new Vector3f(0,10,0), Quaternion.DIRECTION_Z.clone()),
                 new RigidBody(false, 10),
-                new CollisionShape(new BoxCollisionShape(new Vector3f(0.5f,0.5f,0.5f))));
+                new CustomShape(new BoxCollisionShape(new Vector3f(0.5f,0.5f,0.5f))));
 
         EntityId box2 = entityData.createEntity();
         entityData.setComponents(box2,
                 new PhysicsPosition(new Vector3f(0,0,0), Quaternion.DIRECTION_Z.clone()),
                 new RigidBody(false, 0),
-                new CollisionShape(new BoxCollisionShape(new Vector3f(0.5f,0.5f,0.5f))));
+                new CustomShape(new BoxCollisionShape(new Vector3f(0.5f,0.5f,0.5f))));
 
         getInputManager().addMapping("Push", new KeyTrigger(KeyInput.KEY_SPACE));
         getInputManager().addListener((AnalogListener) (name, time, tpf) -> {

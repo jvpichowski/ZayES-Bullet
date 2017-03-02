@@ -4,10 +4,10 @@ import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.PhysicsTickListener;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
+import com.jvpichowski.jme3.es.ObjectContainer;
 import com.jvpichowski.jme3.es.bullet.BulletSystem;
 import com.jvpichowski.jme3.es.bullet.PhysicsInstanceFilter;
 import com.jvpichowski.jme3.es.bullet.PhysicsSystem;
-import com.jvpichowski.jme3.es.bullet.RigidBodyContainer;
 import com.jvpichowski.jme3.es.bullet.components.AngularVelocity;
 import com.jvpichowski.jme3.es.bullet.components.LinearVelocity;
 import com.simsilica.es.*;
@@ -18,7 +18,7 @@ import com.simsilica.es.*;
 public final class VelocitySystem implements PhysicsSystem, PhysicsTickListener {
 
     private EntityData entityData;
-    private RigidBodyContainer rigidBodies;
+    private ObjectContainer<PhysicsRigidBody> rigidBodies;
     private EntitySet linearVelocities;
     private EntitySet angularVelocities;
 

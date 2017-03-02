@@ -4,6 +4,7 @@ import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.PhysicsTickListener;
 import com.jme3.bullet.objects.PhysicsGhostObject;
 import com.jme3.bullet.objects.PhysicsRigidBody;
+import com.jvpichowski.jme3.es.ObjectContainer;
 import com.jvpichowski.jme3.es.bullet.*;
 import com.jvpichowski.jme3.es.bullet.components.PhysicsPosition;
 import com.simsilica.es.EntityData;
@@ -17,8 +18,8 @@ public final class PhysicsPositionSystem implements PhysicsSystem, PhysicsTickLi
 
     private EntityData entityData;
 
-    private RigidBodyContainer rigidBodies;
-    private GhostObjectContainer ghostObjects;
+    private ObjectContainer<PhysicsRigidBody> rigidBodies;
+    private ObjectContainer<PhysicsGhostObject> ghostObjects;
 
     private EntitySet physicsPositions;
 

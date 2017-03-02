@@ -2,7 +2,10 @@ package com.jvpichowski.jme3.es.bullet;
 
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.PhysicsTickListener;
+import com.jme3.bullet.objects.PhysicsGhostObject;
+import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
+import com.jvpichowski.jme3.es.ObjectContainer;
 import com.jvpichowski.jme3.es.bullet.systems.*;
 import com.simsilica.es.*;
 
@@ -23,6 +26,7 @@ public final class BulletSystem implements PhysicsTickListener{
     private Vector3f worldMax;
     private PhysicsSpace physicsSpace = null;
     private EntityData entityData = null;
+    private CustomShapeFactory customShapeFactory;
 
     private RigidBodyContainer rigidBodies;
     private GhostObjectContainer ghostObjects;
@@ -40,22 +44,23 @@ public final class BulletSystem implements PhysicsTickListener{
         this(entityData,
                 new Vector3f(-10000f, -10000f, -10000f),
                 new Vector3f(10000f, 10000f, 10000f),
-                PhysicsSpace.BroadphaseType.DBVT, 0, systems);
+                PhysicsSpace.BroadphaseType.DBVT, 0, new CollisionShapeFactory(), systems);
     }
 
     public BulletSystem(EntityData entityData, int instance, PhysicsSystem... systems){
         this(entityData,
                 new Vector3f(-10000f, -10000f, -10000f),
                 new Vector3f(10000f, 10000f, 10000f),
-                PhysicsSpace.BroadphaseType.DBVT, instance, systems);
+                PhysicsSpace.BroadphaseType.DBVT, instance, new CollisionShapeFactory(), systems);
     }
 
     public BulletSystem(EntityData entityData, Vector3f worldMin, Vector3f worldMax,
-                        PhysicsSpace.BroadphaseType broadphaseType, int instance, PhysicsSystem... systems){
+                        PhysicsSpace.BroadphaseType broadphaseType, int instance, CustomShapeFactory customShapeFactory, PhysicsSystem... systems){
         if(instance > 0){
             this.instanceFilter = new PhysicsInstanceFilter(instance);
         }
 
+        this.customShapeFactory = customShapeFactory;
         this.entityData = entityData;
         this.broadphaseType = broadphaseType;
         this.worldMin = worldMin;
@@ -64,11 +69,11 @@ public final class BulletSystem implements PhysicsTickListener{
         physicsSpace = new PhysicsSpace(worldMin, worldMax, broadphaseType);
 
         if(instanceFilter == null) {
-            rigidBodies = new RigidBodyContainer(entityData, physicsSpace);
-            ghostObjects = new GhostObjectContainer(entityData, physicsSpace);
+            rigidBodies = new RigidBodyContainer(entityData, physicsSpace, customShapeFactory);
+            ghostObjects = new GhostObjectContainer(entityData, physicsSpace, customShapeFactory);
         }else{
-            rigidBodies = new RigidBodyContainer(entityData, physicsSpace, instanceFilter);
-            ghostObjects = new GhostObjectContainer(entityData, physicsSpace, instanceFilter);
+            rigidBodies = new RigidBodyContainer(entityData, physicsSpace, customShapeFactory, instanceFilter);
+            ghostObjects = new GhostObjectContainer(entityData, physicsSpace, customShapeFactory, instanceFilter);
         }
 
         physicsSpace.addTickListener(this);
@@ -150,6 +155,10 @@ public final class BulletSystem implements PhysicsTickListener{
         }
     }
 
+    public CustomShapeFactory getCustomShapeFactory(){
+        return customShapeFactory;
+    }
+
     /**
      * For debugging with BulletDebugAppState or advanced behavior.
      * E.G. attach your own event listeners and so on.
@@ -168,7 +177,7 @@ public final class BulletSystem implements PhysicsTickListener{
      *
      * @return
      */
-    public RigidBodyContainer getRigidBodies() {
+    public ObjectContainer<PhysicsRigidBody> getRigidBodies() {
         return rigidBodies;
     }
 
@@ -177,7 +186,7 @@ public final class BulletSystem implements PhysicsTickListener{
      *
      * @return
      */
-    public GhostObjectContainer getGhostObjects() {
+    public ObjectContainer<PhysicsGhostObject> getGhostObjects() {
         return ghostObjects;
     }
 

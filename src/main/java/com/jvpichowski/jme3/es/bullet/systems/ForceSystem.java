@@ -3,10 +3,10 @@ package com.jvpichowski.jme3.es.bullet.systems;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.PhysicsTickListener;
 import com.jme3.bullet.objects.PhysicsRigidBody;
+import com.jvpichowski.jme3.es.ObjectContainer;
 import com.jvpichowski.jme3.es.bullet.BulletSystem;
 import com.jvpichowski.jme3.es.bullet.PhysicsInstanceFilter;
 import com.jvpichowski.jme3.es.bullet.PhysicsSystem;
-import com.jvpichowski.jme3.es.bullet.RigidBodyContainer;
 import com.jvpichowski.jme3.es.bullet.components.CentralForce;
 import com.jvpichowski.jme3.es.bullet.components.Force;
 import com.jvpichowski.jme3.es.bullet.components.Torque;
@@ -19,7 +19,7 @@ import com.simsilica.es.EntitySet;
  */
 public final class ForceSystem implements PhysicsSystem, PhysicsTickListener {
 
-    private RigidBodyContainer rigidBodies;
+    private ObjectContainer<PhysicsRigidBody> rigidBodies;
     private EntitySet forces;
     private EntitySet centralForces;
     private EntitySet torques;
