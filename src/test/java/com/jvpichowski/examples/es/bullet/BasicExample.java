@@ -59,7 +59,7 @@ public class BasicExample extends SimpleApplication {
 
         //This is nearly the same as above. The box is spawned at (0,0,0) and it will be static
         //because it has no mass. It will have the same size as the other box because the half extents are
-        //equal.
+        //equal to the default ones.
         EntityId box2 = entityData.createEntity();
         entityData.setComponents(box2,
                 new RigidBody(false, 0),
@@ -78,7 +78,7 @@ public class BasicExample extends SimpleApplication {
         //To see something we have to attach the bullet debug view. I didn't spend time to add fancy objects
         //which made things more complicated but there is a fancy debug view.
         //This is a very dirty way to attach the bullet debug view but we have to wait until
-        //the ESBulletState is initialized.
+        //the ESBulletState is initialized. The task is called right after initialization of the esBulletState.
         ESBulletState esBulletState = stateManager.getState(ESBulletState.class);
         esBulletState.onInitialize(() -> {
             //Add Debug State to debug physics
