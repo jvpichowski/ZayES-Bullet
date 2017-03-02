@@ -3,13 +3,11 @@ package com.jvpichowski.examples.es.bullet.character;
 import com.jme3.app.FlyCamAppState;
 import com.jme3.app.SimpleApplication;
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
-import com.jme3.bullet.collision.shapes.PlaneCollisionShape;
 import com.jme3.bullet.debug.BulletDebugAppState;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.math.FastMath;
-import com.jme3.math.Plane;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jvpichowski.jme3.es.bullet.character.Character;
@@ -47,14 +45,14 @@ public class CharacterTest extends SimpleApplication implements ActionListener {
         entityData.setComponents(plane,
                 new PhysicsPosition(new Vector3f(), Quaternion.DIRECTION_Z.clone()),
                 new RigidBody(false, 0),
-                new CollisionShape(new BoxCollisionShape(new Vector3f(50, 0.5f, 50))),
+                new CustomShape(new BoxCollisionShape(new Vector3f(50, 0.5f, 50))),
                 new Friction(0.65f));
 
         EntityId ramp = entityData.createEntity();
         entityData.setComponents(ramp,
                 new PhysicsPosition(new Vector3f(0,1,0), new Quaternion().fromAngleAxis(FastMath.DEG_TO_RAD * 10, Vector3f.UNIT_Z)),
                 new RigidBody(false, 0),
-                new CollisionShape(new BoxCollisionShape(new Vector3f(10, 0.5f, 10))),
+                new CustomShape(new BoxCollisionShape(new Vector3f(10, 0.5f, 10))),
                 new Friction(0.1f));
 
         EntityId box = entityData.createEntity();
@@ -62,7 +60,7 @@ public class CharacterTest extends SimpleApplication implements ActionListener {
                 new Friction(0.65f),
                 new PhysicsPosition(new Vector3f(0,10,0), Quaternion.DIRECTION_Z.clone()),
                 new RigidBody(false, 10000),
-                new CollisionShape(new BoxCollisionShape(new Vector3f(0.5f,0.5f,0.5f))));
+                new CustomShape(new BoxCollisionShape(new Vector3f(0.5f,0.5f,0.5f))));
 
         character = entityData.createEntity();
         entityData.setComponents(character,

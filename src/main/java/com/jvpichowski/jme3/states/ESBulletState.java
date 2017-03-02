@@ -18,8 +18,6 @@ import java.util.List;
  */
 public final class ESBulletState extends BaseAppState {
 
-    //TODO add threading like in BulletAppState
-
     private EntityData entityData;
     private BulletSystem bulletSystem;
 
@@ -80,5 +78,26 @@ public final class ESBulletState extends BaseAppState {
     @Override
     protected void onDisable() {
 
+    }
+
+    public enum ThreadingType {
+
+        /**
+         * Default mode; user update, physics update and rendering happen
+         * sequentially (single threaded)
+         */
+        SEQUENTIAL,
+
+        /**
+         * Parallel threaded mode; physics update and rendering are executed in
+         * parallel, update order is kept.<br/> Multiple BulletAppStates will
+         * execute in parallel in this mode.
+         */
+        PARALLEL_MULTITHREADED,
+
+        /**
+         * Mixed mode; physics update happens while user update (single threaded)
+         */
+        MIXED
     }
 }

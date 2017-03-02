@@ -3,7 +3,7 @@ package com.jvpichowski.jme3.es.bullet;
 import com.simsilica.es.EntityData;
 
 /**
- * Every physics subsystem can implement this interface to get hooked
+ * Every physics subsystem can implement this interface to getShape hooked
  * into the life cycle of the physics space. Be aware that you have to use the
  * PhysicsInstanceFilter if you want this system to support multiple
  * physics instances.

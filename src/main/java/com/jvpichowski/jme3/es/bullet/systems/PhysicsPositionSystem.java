@@ -4,8 +4,10 @@ import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.PhysicsTickListener;
 import com.jme3.bullet.objects.PhysicsGhostObject;
 import com.jme3.bullet.objects.PhysicsRigidBody;
+import com.jvpichowski.jme3.es.ObjectContainer;
 import com.jvpichowski.jme3.es.bullet.*;
 import com.jvpichowski.jme3.es.bullet.components.PhysicsPosition;
+import com.jvpichowski.jme3.es.bullet.components.WarpPosition;
 import com.simsilica.es.EntityData;
 import com.simsilica.es.EntityId;
 import com.simsilica.es.EntitySet;
@@ -17,10 +19,11 @@ public final class PhysicsPositionSystem implements PhysicsSystem, PhysicsTickLi
 
     private EntityData entityData;
 
-    private RigidBodyContainer rigidBodies;
-    private GhostObjectContainer ghostObjects;
+    private ObjectContainer<PhysicsRigidBody> rigidBodies;
+    private ObjectContainer<PhysicsGhostObject> ghostObjects;
 
     private EntitySet physicsPositions;
+    private EntitySet warpPositions;
 
     @Override
     public void initialize(EntityData entityData, BulletSystem bulletSystem) {
@@ -30,8 +33,10 @@ public final class PhysicsPositionSystem implements PhysicsSystem, PhysicsTickLi
         PhysicsInstanceFilter instanceFilter = bulletSystem.getInstanceFilter();
         if(instanceFilter == null) {
             physicsPositions = entityData.getEntities(PhysicsPosition.class);
+            warpPositions = entityData.getEntities(WarpPosition.class);
         }else{
             physicsPositions = entityData.getEntities(instanceFilter, instanceFilter.getComponentType(), PhysicsPosition.class);
+            warpPositions = entityData.getEntities(instanceFilter, instanceFilter.getComponentType(), WarpPosition.class);
         }
         bulletSystem.getPhysicsSpace().addTickListener(this);
     }
@@ -40,13 +45,14 @@ public final class PhysicsPositionSystem implements PhysicsSystem, PhysicsTickLi
     public void destroy(EntityData entityData, BulletSystem bulletSystem) {
         bulletSystem.getPhysicsSpace().removeTickListener(this);
         physicsPositions.release();
+        warpPositions.release();
     }
 
     @Override
     public void prePhysicsTick(PhysicsSpace space, float tpf) {
-        physicsPositions.applyChanges();
-        physicsPositions.forEach(entity -> {
-            PhysicsPosition position = entity.get(PhysicsPosition.class);
+        warpPositions.applyChanges();
+        warpPositions.forEach(entity -> {
+            WarpPosition position = entity.get(WarpPosition.class);
             PhysicsRigidBody rigidBody = rigidBodies.getObject(entity.getId());
             if(rigidBody != null){
                 rigidBody.setPhysicsLocation(position.getLocation());
@@ -57,6 +63,7 @@ public final class PhysicsPositionSystem implements PhysicsSystem, PhysicsTickLi
                 ghostObject.setPhysicsLocation(position.getLocation());
                 ghostObject.setPhysicsRotation(position.getRotation());
             }
+            entityData.removeComponent(entity.getId(), WarpPosition.class);
         });
     }
 

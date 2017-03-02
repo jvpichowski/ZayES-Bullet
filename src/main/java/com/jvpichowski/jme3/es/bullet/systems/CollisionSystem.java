@@ -5,10 +5,10 @@ import com.jme3.bullet.PhysicsTickListener;
 import com.jme3.bullet.collision.PhysicsCollisionEvent;
 import com.jme3.bullet.collision.PhysicsCollisionListener;
 import com.jme3.bullet.objects.PhysicsRigidBody;
+import com.jvpichowski.jme3.es.ObjectContainer;
 import com.jvpichowski.jme3.es.bullet.BulletSystem;
 import com.jvpichowski.jme3.es.bullet.PhysicsInstanceFilter;
 import com.jvpichowski.jme3.es.bullet.PhysicsSystem;
-import com.jvpichowski.jme3.es.bullet.RigidBodyContainer;
 import com.jvpichowski.jme3.es.bullet.components.Collision;
 import com.jvpichowski.jme3.es.bullet.components.CollisionGroup;
 import com.simsilica.es.EntityData;
@@ -27,7 +27,7 @@ public final class CollisionSystem implements PhysicsSystem, PhysicsCollisionLis
     private EntitySet collidingObjects;
     private EntitySet collisionGroups;
 
-    private RigidBodyContainer rigidBodies;
+    private ObjectContainer<PhysicsRigidBody> rigidBodies;
 
     @Override
     public void initialize(EntityData entityData, BulletSystem bulletSystem) {

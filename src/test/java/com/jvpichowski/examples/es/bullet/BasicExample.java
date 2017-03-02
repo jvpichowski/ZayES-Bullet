@@ -2,7 +2,6 @@ package com.jvpichowski.examples.es.bullet;
 
 import com.jme3.app.FlyCamAppState;
 import com.jme3.app.SimpleApplication;
-import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.PlaneCollisionShape;
 import com.jme3.bullet.debug.BulletDebugAppState;
 import com.jme3.math.Plane;
@@ -36,49 +35,56 @@ public class BasicExample extends SimpleApplication {
     @Override
     public void simpleInitApp() {
         //Add some entities
-        //You need these base components to create a physics entity.
-        //Warning: the PhysicsPosition component is only a setter if the entity
-        //is added the first time to the physics space. I don't like this
-        //behavior and will make it soon completely a read only component.
-        //Instead I will add a warp component to manually change the physics position.
-        //Combined with these changes I will refactor the systems to only
-        //listen for changes and not pulling every component.
+
+        //This should be a rigid body with mass 0 and it should be dynamic (not kinematic).
+        //The definition is the same as in bullet.
+        //Every rigid body needs a collision shape. There exists no shape component for
+        //planes yet. As a consequence we have to create a CustomShape component and attach
+        //a PlaneCollisionShape to it. There is a factory in the background which converts this
+        //collision shapes automatically to rigid objects. This collision shape could be very heavy (e.g. Terrain).
+        //To circumvent this situation you could attach a custom factory and use small definition
+        //objects. Examples concerning custom shape factories and more shape components will come.
         EntityId plane = entityData.createEntity();
         entityData.setComponents(plane,
-                new PhysicsPosition(new Vector3f(), Quaternion.DIRECTION_Z.clone()),
                 new RigidBody(false, 0),
-                new CollisionShape(new PlaneCollisionShape(new Plane(Vector3f.UNIT_Y.clone(), 0))));
+                new CustomShape(new PlaneCollisionShape(new Plane(Vector3f.UNIT_Y.clone(), 0))));
 
+        //Here a simple box is created. The box should fall down and therefore it has a mass of 10kg.
+        //It will be spawned at the WarpPosition. The shape is a simple box with size 1x1x1m.
         EntityId box = entityData.createEntity();
         entityData.setComponents(box,
-                new PhysicsPosition(new Vector3f(0,10,0), Quaternion.DIRECTION_Z.clone()),
+                new WarpPosition(new Vector3f(0,10,0), Quaternion.DIRECTION_Z.clone()),
                 new RigidBody(false, 10),
-                new CollisionShape(new BoxCollisionShape(new Vector3f(0.5f,0.5f,0.5f))));
+                new BoxShape());
 
+        //This is nearly the same as above. The box is spawned at (0,0,0) and it will be static
+        //because it has no mass. It will have the same size as the other box because the half extents are
+        //equal to the default ones.
         EntityId box2 = entityData.createEntity();
         entityData.setComponents(box2,
-                new PhysicsPosition(new Vector3f(0,0,0), Quaternion.DIRECTION_Z.clone()),
                 new RigidBody(false, 0),
-                new CollisionShape(new BoxCollisionShape(new Vector3f(0.5f,0.5f,0.5f))));
+                new BoxShape(new Vector3f(0.5f, 0.5f, 0.5f)));
 
+        //We could add a little force at the beginning to push the falling box slightly away.
+        //The force is 10m/s^2 in each direction because the mass of the box is 10kg.
         //uncomment this line and notice the difference
         //entityData.setComponent(box, new Force(new Vector3f(100,100,100), new Vector3f()));
-    }
 
-    @Override
-    public void update() {
-        super.update();
+        //As you can see the whole system works unnoticeable in the background.
+        //You add components and read components (e.g. PhysicsPosition) and you don't need to care anymore
+        //how the physics is processed. Of course the physics system is accessible and
+        //modifiable if you have advanced needs.
 
-        //attach DebugState after initialization of esBulletState
-        if(getStateManager().getState(BulletDebugAppState.class) == null){
-            if(getStateManager().getState(ESBulletState.class).isInitialized()) {
-                ESBulletState esBulletState = getStateManager().getState(ESBulletState.class);
-
-                //Add Debug State to debug physics
-                BulletDebugAppState debugAppState = new BulletDebugAppState(esBulletState.getPhysicsSpace());
-                getStateManager().attach(debugAppState);
-                debugAppState.setEnabled(true);
-            }
-        }
+        //To see something we have to attach the bullet debug view. I didn't spend time to add fancy objects
+        //which made things more complicated but there is a fancy debug view.
+        //This is a very dirty way to attach the bullet debug view but we have to wait until
+        //the ESBulletState is initialized. The task is called right after initialization of the esBulletState.
+        ESBulletState esBulletState = stateManager.getState(ESBulletState.class);
+        esBulletState.onInitialize(() -> {
+            //Add Debug State to debug physics
+            //As you see there are getters for physics space and so on.
+            BulletDebugAppState debugAppState = new BulletDebugAppState(esBulletState.getPhysicsSpace());
+            getStateManager().attach(debugAppState);
+        });
     }
 }

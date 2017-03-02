@@ -3,13 +3,13 @@ package com.jvpichowski.jme3.es.bullet.systems;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.PhysicsTickListener;
 import com.jme3.bullet.objects.PhysicsRigidBody;
-import com.jme3.math.Vector3f;
+import com.jvpichowski.jme3.es.ObjectContainer;
 import com.jvpichowski.jme3.es.bullet.BulletSystem;
 import com.jvpichowski.jme3.es.bullet.PhysicsInstanceFilter;
 import com.jvpichowski.jme3.es.bullet.PhysicsSystem;
-import com.jvpichowski.jme3.es.bullet.RigidBodyContainer;
 import com.jvpichowski.jme3.es.bullet.components.AngularVelocity;
 import com.jvpichowski.jme3.es.bullet.components.LinearVelocity;
+import com.jvpichowski.jme3.es.bullet.components.WarpVelocity;
 import com.simsilica.es.*;
 
 /**
@@ -18,9 +18,10 @@ import com.simsilica.es.*;
 public final class VelocitySystem implements PhysicsSystem, PhysicsTickListener {
 
     private EntityData entityData;
-    private RigidBodyContainer rigidBodies;
+    private ObjectContainer<PhysicsRigidBody> rigidBodies;
     private EntitySet linearVelocities;
     private EntitySet angularVelocities;
+    private EntitySet warpVelocities;
 
     @Override
     public void initialize(EntityData entityData, BulletSystem bulletSystem) {
@@ -30,9 +31,11 @@ public final class VelocitySystem implements PhysicsSystem, PhysicsTickListener 
         if(filter == null) {
             linearVelocities = entityData.getEntities(LinearVelocity.class);
             angularVelocities = entityData.getEntities(AngularVelocity.class);
+            warpVelocities = entityData.getEntities(WarpVelocity.class);
         }else{
             linearVelocities = entityData.getEntities(filter, filter.getComponentType(), LinearVelocity.class);
             angularVelocities = entityData.getEntities(filter, filter.getComponentType(), AngularVelocity.class);
+            warpVelocities = entityData.getEntities(filter, filter.getComponentType(), WarpVelocity.class);
         }
         bulletSystem.getPhysicsSpace().addTickListener(this);
     }
@@ -42,30 +45,21 @@ public final class VelocitySystem implements PhysicsSystem, PhysicsTickListener 
         bulletSystem.getPhysicsSpace().removeTickListener(this);
         linearVelocities.release();
         angularVelocities.release();
+        warpVelocities.release();
     }
 
 
     @Override
     public void prePhysicsTick(PhysicsSpace space, float tpf) {
-        linearVelocities.applyChanges();
-        linearVelocities.forEach(entity -> {
+        warpVelocities.applyChanges();
+        warpVelocities.forEach(entity -> {
             PhysicsRigidBody rigidBody = rigidBodies.getObject(entity.getId());
             if(rigidBody != null){
-                Vector3f velocity = entity.get(LinearVelocity.class).getVelocity();
-                if(!rigidBody.getLinearVelocity().equals(velocity)) {
-                    rigidBody.setLinearVelocity(velocity);
-                }
+                WarpVelocity warpVelocity = entity.get(WarpVelocity.class);
+                rigidBody.setLinearVelocity(warpVelocity.getLinearVelocity());
+                rigidBody.setAngularVelocity(warpVelocity.getAngularVelocity());
             }
-        });
-        angularVelocities.applyChanges();
-        angularVelocities.forEach(entity -> {
-            PhysicsRigidBody rigidBody = rigidBodies.getObject(entity.getId());
-            if(rigidBody != null){
-                Vector3f velocity = entity.get(AngularVelocity.class).getVelocity();
-                if(!rigidBody.getAngularVelocity().equals(velocity)) {
-                    rigidBody.setAngularVelocity(velocity);
-                }
-            }
+            entityData.removeComponent(entity.getId(), WarpVelocity.class);
         });
     }
 
