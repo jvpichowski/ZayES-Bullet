@@ -3,6 +3,7 @@ package com.jvpichowski.jme3.es.bullet.character;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.PhysicsTickListener;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jvpichowski.jme3.es.bullet.BulletSystem;
 import com.jvpichowski.jme3.es.bullet.PhysicsSystem;
@@ -35,7 +36,7 @@ public final class CharacterSystem implements PhysicsSystem, PhysicsTickListener
 
     @Override
     public void prePhysicsTick(PhysicsSpace space, float tpf) {
-        characters.applyChanges();//IchHabeDieAufgabenAlleineUndGanzBearbeitet!
+        characters.applyChanges();
         characters.forEach(e -> {
             Character character = e.get(Character.class);
             e.set(new Friction(0.65f));

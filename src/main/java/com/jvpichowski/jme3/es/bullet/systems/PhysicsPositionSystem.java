@@ -57,19 +57,20 @@ public final class PhysicsPositionSystem implements PhysicsSystem, PhysicsTickLi
             if(rigidBody != null){
                 rigidBody.setPhysicsLocation(position.getLocation());
                 rigidBody.setPhysicsRotation(position.getRotation());
+                entityData.removeComponent(entity.getId(), WarpPosition.class);
             }
             PhysicsGhostObject ghostObject = ghostObjects.getObject(entity.getId());
             if(ghostObject != null){
                 ghostObject.setPhysicsLocation(position.getLocation());
                 ghostObject.setPhysicsRotation(position.getRotation());
+                entityData.removeComponent(entity.getId(), WarpPosition.class);
             }
-            entityData.removeComponent(entity.getId(), WarpPosition.class);
         });
     }
 
     @Override
     public void physicsTick(PhysicsSpace space, float tpf) {
-        //apply ghost position before rigidBody so that it can moev with an rigidBody if they are coupled
+        //apply ghost position before rigidBody so that it can move with an rigidBody if they are coupled
         space.getGhostObjectList().forEach(ghostObject -> entityData.setComponent((EntityId)ghostObject.getUserObject(),
                 new PhysicsPosition(ghostObject.getPhysicsLocation(), ghostObject.getPhysicsRotation())));
         space.getRigidBodyList().forEach(rigidBody -> entityData.setComponent((EntityId)rigidBody.getUserObject(),

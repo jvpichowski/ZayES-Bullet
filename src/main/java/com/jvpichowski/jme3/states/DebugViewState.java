@@ -198,6 +198,7 @@ public final class DebugViewState extends BaseAppState {
             if(object instanceof SphereCollisionShape){
                 return createSphere(((SphereCollisionShape)shape.getDefinition()).getRadius());
             }
+            Logger.getLogger(BodyView.Factory.class.getName()).info("Can't create mesh for definition: "+object);
             return null;
         }
 

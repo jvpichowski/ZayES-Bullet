@@ -9,7 +9,7 @@ import com.jme3.input.controls.KeyTrigger;
 /**
  * Outputs the camera position if you hit F8.
  */
-public class CameraPostionPrinter extends BaseAppState implements ActionListener{
+public class CameraPositionPrinter extends BaseAppState implements ActionListener{
 
     private Application app;
 
