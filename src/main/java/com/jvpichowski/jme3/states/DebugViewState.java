@@ -46,11 +46,6 @@ public final class DebugViewState extends BaseAppState {
         //this.viewPort = viewPort;
         this.parentNode = node;
         this.customShapeFactory = customShapeFactory;
-
-        /*DirectionalLight sun = new DirectionalLight();
-        sun.setDirection(new Vector3f(1,0,-2).normalizeLocal());
-        sun.setColor(ColorRGBA.White);
-        rootNode.addLight(sun);*/
     }
 
     public DebugViewState(EntityData entityData, Node node) {
@@ -146,7 +141,7 @@ public final class DebugViewState extends BaseAppState {
                 return new Node("Empty mesh ("+componentType+") "+e.getId());
             }
             Geometry geom = new Geometry(componentType.getName()+" "+ e.getId(), mesh);
-            geom.setMaterial(createMaterial(ColorRGBA.Cyan));
+            geom.setMaterial(createMaterial(ColorRGBA.Cyan.mult(ColorRGBA.DarkGray)));
             rootNode.attachChild(geom);
             return geom;
         }
@@ -167,27 +162,15 @@ public final class DebugViewState extends BaseAppState {
             object.removeFromParent();
         }
 
-        private Material createMaterial(ColorRGBA color/*, boolean lit*/){
-            /*if(lit) {
-                Material material = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
-                material.setColor("Diffuse", color);
-                material.setBoolean("UseMaterialColors", true);
-                TextureKey key = new TextureKey("Interface/grid-shaded.png");
-                key.setGenerateMips(true);
-                Texture texture = assetManager.loadTexture(key);
-                texture.setWrap(Texture.WrapMode.Repeat);
-                material.setTexture("DiffuseMap", texture);
-                return material;
-            }else{*/
+        private Material createMaterial(ColorRGBA color){
             Material material = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
             material.setColor("Color", color);
-            //TextureKey key = new TextureKey("Interface/grid-shaded.png");
-            //key.setGenerateMips(true);
-            //Texture texture = assetManager.loadTexture(key);
-            //texture.setWrap(Texture.WrapMode.Repeat);
-            //material.setTexture("ColorMap", texture);
+            TextureKey key = new TextureKey("Interface/grid-shaded.png");
+            key.setGenerateMips(true);
+            Texture texture = assetManager.loadTexture(key);
+            texture.setWrap(Texture.WrapMode.Repeat);
+            material.setTexture("ColorMap", texture);
             return material;
-            //}
         }
     }
 
@@ -225,7 +208,6 @@ public final class DebugViewState extends BaseAppState {
         private static Mesh createSphere(float radius){
             Sphere mesh = new Sphere(24, 24, radius);
             mesh.setTextureMode(Sphere.TextureMode.Projected);
-            mesh.scaleTextureCoordinates(new Vector2f(4.0f, 2.0f));
             return mesh;
         }
 
