@@ -186,7 +186,7 @@ public final class ESBulletState extends BaseAppState {
 
         /**
          * Parallel threaded mode; physics update and rendering are executed in
-         * parallel, update order is kept.<br/> Multiple BulletAppStates will
+         * parallel, update order is kept. Multiple BulletAppStates will
          * execute in parallel in this mode. (multi threaded)
          */
         PARALLEL,
