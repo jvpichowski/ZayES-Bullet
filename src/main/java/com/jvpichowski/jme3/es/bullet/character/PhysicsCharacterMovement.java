@@ -6,15 +6,15 @@ import com.simsilica.es.EntityComponent;
 /**
  * Created by jan on 20.02.2017.
  */
-public final class Movement implements EntityComponent {
+public final class PhysicsCharacterMovement implements EntityComponent {
 
     private final Vector3f movement;
 
-    public Movement(Vector3f movement) {
+    public PhysicsCharacterMovement(Vector3f movement) {
         this.movement = movement;
     }
 
-    public Movement() {
+    public PhysicsCharacterMovement() {
         this(new Vector3f());
     }
 

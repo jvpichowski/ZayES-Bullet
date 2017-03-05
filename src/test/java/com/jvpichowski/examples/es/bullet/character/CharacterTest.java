@@ -10,9 +10,9 @@ import com.jme3.input.controls.KeyTrigger;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import com.jvpichowski.jme3.es.bullet.character.Character;
-import com.jvpichowski.jme3.es.bullet.character.CharacterSystem;
-import com.jvpichowski.jme3.es.bullet.character.Movement;
+import com.jvpichowski.jme3.es.bullet.character.PhysicsCharacter;
+import com.jvpichowski.jme3.es.bullet.character.PhysicsCharacterSystem;
+import com.jvpichowski.jme3.es.bullet.character.PhysicsCharacterMovement;
 import com.jvpichowski.jme3.es.bullet.components.*;
 import com.jvpichowski.jme3.states.CameraPositionPrinter;
 import com.jvpichowski.jme3.states.DebugViewState;
@@ -72,12 +72,12 @@ public class CharacterTest extends SimpleApplication implements ActionListener {
 
         character = entityData.createEntity();
         entityData.setComponents(character,
-                new Character(75, 0.5f, 1.8f),
-                new Movement(new Vector3f(0,0,0)),
+                new PhysicsCharacter(75, 0.5f, 1.8f),
+                new PhysicsCharacterMovement(new Vector3f(0,0,0)),
                 new WarpPosition(new Vector3f(0, 20, 0), new Quaternion()));
 
         ESBulletState bulletState = getStateManager().getState(ESBulletState.class);
-        bulletState.onInitialize(() -> bulletState.getBulletSystem().addPhysicsSystem(new CharacterSystem()));
+        bulletState.onInitialize(() -> bulletState.getBulletSystem().addPhysicsSystem(new PhysicsCharacterSystem()));
         bulletState.onInitialize(() -> {
             //Add Debug State to debug physics
             BulletDebugAppState debugAppState = new BulletDebugAppState(bulletState.getPhysicsSpace());
@@ -114,6 +114,6 @@ public class CharacterTest extends SimpleApplication implements ActionListener {
         }
         float move = (forward ? 6 : 0) - (backward ? 6 : 0); //at minimum 6 otherwise is the friction too high
         float step = (step_left ? 6 : 0) - (step_right ? 6 : 0);
-        entityData.setComponent(character, new Movement(new Vector3f(step, 0, move)));
+        entityData.setComponent(character, new PhysicsCharacterMovement(new Vector3f(step, 0, move)));
     }
 }

@@ -5,19 +5,19 @@ import com.simsilica.es.EntityComponent;
 /**
  * Created by jan on 20.02.2017.
  */
-public final class Character implements EntityComponent {
+public final class PhysicsCharacter implements EntityComponent {
 
     private final float mass;
     private final float radius;
     private final float height;
 
-    public Character(float mass, float radius, float height) {
+    public PhysicsCharacter(float mass, float radius, float height) {
         this.mass = mass;
         this.radius = radius;
         this.height = height;
     }
 
-    public Character() {
+    public PhysicsCharacter() {
         this(0,0,0);
     }
 
