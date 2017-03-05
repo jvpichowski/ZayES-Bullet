@@ -39,6 +39,7 @@ public final class DebugViewState extends BaseAppState {
     private BodyView<SphereShape> sphereView;
     private CustomShapeFactory customShapeFactory;
     private EntitySet bodyPositions;
+    private PositionMarkers positionMarkers;
 
 
     public DebugViewState(EntityData entityData, /*ViewPort viewPort*/Node node, CustomShapeFactory customShapeFactory) {
@@ -59,9 +60,11 @@ public final class DebugViewState extends BaseAppState {
         boxView = new BodyView<>(entityData, app.getAssetManager(), rootNode, BoxShape.class, MeshFactory::create);
         sphereView = new BodyView<>(entityData, app.getAssetManager(), rootNode, SphereShape.class, MeshFactory::create);
         bodyPositions = entityData.getEntities(RigidBody.class, PhysicsPosition.class);
+        positionMarkers = new PositionMarkers(entityData, app.getAssetManager(), rootNode);
         customView.start();
         boxView.start();
         sphereView.start();
+        positionMarkers.start();
     }
 
     @Override
@@ -70,6 +73,7 @@ public final class DebugViewState extends BaseAppState {
         customView.stop();
         boxView.stop();
         sphereView.stop();
+        positionMarkers.stop();
         rootNode = null;
     }
 
@@ -91,6 +95,7 @@ public final class DebugViewState extends BaseAppState {
         if(!isEnabled()){
             return;
         }
+        positionMarkers.update();
         customView.update();
         boxView.update();
         sphereView.update();
@@ -106,6 +111,47 @@ public final class DebugViewState extends BaseAppState {
                 spatial.setLocalTranslation(position.getLocation());
             }
         });
+    }
+
+    private static final class PositionMarkers extends EntityContainer<Spatial> {
+
+        private final AssetManager assetManager;
+        private final Node rootNode;
+
+        public PositionMarkers(EntityData ed, AssetManager assetManager, Node rootNode) {
+            super(ed, PhysicsPosition.class);
+            this.rootNode = rootNode;
+            this.assetManager = assetManager;
+        }
+
+        @Override
+        protected Spatial addObject(Entity e) {
+            Vector3f loc = e.get(PhysicsPosition.class).getLocation();
+            Mesh mesh = MeshFactory.createSphere(0.25f);
+            Material material = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+            material.setColor("Color", ColorRGBA.Orange);
+            TextureKey key = new TextureKey("Interface/grid-shaded.png");
+            key.setGenerateMips(true);
+            Texture texture = assetManager.loadTexture(key);
+            texture.setWrap(Texture.WrapMode.Repeat);
+            material.setTexture("ColorMap", texture);
+            Geometry geometry = new Geometry("PhysicsPosition: "+e.getId(), mesh);
+            geometry.setMaterial(material);
+            geometry.setLocalTranslation(loc);
+            rootNode.attachChild(geometry);
+            return geometry;
+        }
+
+        @Override
+        protected void updateObject(Spatial object, Entity e) {
+            Vector3f loc = e.get(PhysicsPosition.class).getLocation();
+            object.setLocalTranslation(loc);
+        }
+
+        @Override
+        protected void removeObject(Spatial object, Entity e) {
+            object.removeFromParent();
+        }
     }
 
     /**
@@ -126,7 +172,7 @@ public final class DebugViewState extends BaseAppState {
         private Node rootNode;
 
         public BodyView(EntityData ed, AssetManager assetManager, Node rootNode, Class<T> componentType, Factory<T> factory) {
-            super(ed, componentType);
+            super(ed, componentType, RigidBody.class);
             this.componentType = componentType;
             this.factory = factory;
             this.assetManager = assetManager;
@@ -141,7 +187,16 @@ public final class DebugViewState extends BaseAppState {
                 return new Node("Empty mesh ("+componentType+") "+e.getId());
             }
             Geometry geom = new Geometry(componentType.getName()+" "+ e.getId(), mesh);
-            geom.setMaterial(createMaterial(ColorRGBA.Cyan.mult(ColorRGBA.DarkGray)));
+            RigidBody body = e.get(RigidBody.class);
+            if(body.isKinematic()){
+                geom.setMaterial(createMaterial(ColorRGBA.Green));
+            }else {
+                if(body.getMass() == 0) {
+                    geom.setMaterial(createMaterial(ColorRGBA.Cyan.mult(ColorRGBA.DarkGray)));
+                }else {
+                    geom.setMaterial(createMaterial(ColorRGBA.Red));
+                }
+            }
             rootNode.attachChild(geom);
             return geom;
         }
@@ -155,6 +210,16 @@ public final class DebugViewState extends BaseAppState {
             Mesh mesh = factory.getMesh(e.get(componentType));
             ((Geometry)geom).setMesh(mesh);
             geom.updateModelBound();
+            RigidBody body = e.get(RigidBody.class);
+            if(body.isKinematic()){
+                geom.setMaterial(createMaterial(ColorRGBA.Green));
+            }else {
+                if(body.getMass() == 0) {
+                    geom.setMaterial(createMaterial(ColorRGBA.Cyan.mult(ColorRGBA.DarkGray)));
+                }else {
+                    geom.setMaterial(createMaterial(ColorRGBA.Red));
+                }
+            }
         }
 
         @Override
@@ -187,7 +252,6 @@ public final class DebugViewState extends BaseAppState {
 
         public static Mesh create(SphereShape shape){
             return createSphere(shape.getRadius());
-
         }
 
         public static Mesh create(CustomShape shape, CustomShapeFactory customShapeFactory){
@@ -202,11 +266,11 @@ public final class DebugViewState extends BaseAppState {
             return null;
         }
 
-        private static Mesh createBox(Vector3f halfExtents){
+        public static Mesh createBox(Vector3f halfExtents){
             return new Box(halfExtents.x, halfExtents.y, halfExtents.z);
         }
 
-        private static Mesh createSphere(float radius){
+        public static Mesh createSphere(float radius){
             Sphere mesh = new Sphere(24, 24, radius);
             mesh.setTextureMode(Sphere.TextureMode.Projected);
             return mesh;
