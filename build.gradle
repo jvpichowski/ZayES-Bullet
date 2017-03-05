@@ -40,20 +40,6 @@ repositories {
 
 ext.jmeVersion = '3.1.0-stable'
 
-project(":assets") {
-    apply plugin: "java"
-
-    buildDir = rootProject.file("build/assets")
-
-    sourceSets {
-        main {
-            resources {
-                srcDir '.'
-            }
-        }
-    }
-}
-
 // Create the pom configuration:
 def pomConfig = {
     licenses {
@@ -116,8 +102,6 @@ dependencies {
 
     compile 'com.simsilica:sio2:1.0.3'
     compile 'com.simsilica:zay-es:1.2.1'
-
-    runtime project(':assets')
 }
 
 task wrapper(type: Wrapper) {
