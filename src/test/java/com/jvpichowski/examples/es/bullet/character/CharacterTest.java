@@ -136,8 +136,8 @@ public class CharacterTest extends SimpleApplication implements ActionListener {
             case "STEP_RIGHT" : step_right = isPressed; break;
             default: return;
         }
-        float move = (forward ? 6 : 0) - (backward ? 6 : 0); //at minimum 6 otherwise is the friction too high
-        float step = (step_left ? 6 : 0) - (step_right ? 6 : 0);
+        float move = (forward ? 1.6f : 0) - (backward ? 1.6f : 0); //6km/h = 1.6m/s usual walk speed
+        float step = (step_left ? 6 : 0) - (step_right ? 6 : 0); //stepping is faster than walking
         entityData.setComponent(character, new PhysicsCharacterMovement(new Vector3f(step, 0, move)));
     }
 }

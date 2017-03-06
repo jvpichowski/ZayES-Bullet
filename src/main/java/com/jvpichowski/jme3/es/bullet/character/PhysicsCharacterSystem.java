@@ -57,7 +57,7 @@ public final class PhysicsCharacterSystem implements PhysicsSystem, PhysicsTickL
         characters.applyChanges();
         characters.forEach(e -> {
             PhysicsCharacter character = e.get(PhysicsCharacter.class);
-            e.set(new Friction(1.65f));
+            e.set(new Friction(0.22f));
             e.set(new Factor(new Vector3f(1,1,1), new Vector3f(0,0,0)));
             RigidBody rigidBody = entityData.getComponent(e.getId(), RigidBody.class);
             if(rigidBody == null || rigidBody.getMass() != character.getMass()) {

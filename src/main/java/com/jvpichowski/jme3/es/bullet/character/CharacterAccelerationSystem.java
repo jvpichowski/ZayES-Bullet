@@ -1,6 +1,7 @@
 package com.jvpichowski.jme3.es.bullet.character;
 
 import com.jme3.bullet.PhysicsSpace;
+import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jvpichowski.jme3.es.bullet.components.CentralForce;
 import com.jvpichowski.jme3.es.bullet.components.LinearVelocity;
