@@ -16,44 +16,40 @@ import com.simsilica.es.EntitySet;
 public final class PhysicsCharacterSystem implements PhysicsSystem, PhysicsTickListener {
 
     private InAirSystem inAirSystem;
-    private ClampVelocitySystem clampVelocitySystem;
+    private StickySystem stickySystem;
+    //private ClampVelocitySystem clampVelocitySystem;
     private CharacterAccelerationSystem characterAccelerationSystem;
     private SlowDownSystem slowDownSystem;
 
     private EntityData entityData;
     private EntitySet characters;
-    private EntitySet movements;
-
-    private EntitySet stickySet;
-
     @Override
     public void initialize(EntityData entityData, BulletSystem bulletSystem) {
         this.entityData = entityData;
         characters = entityData.getEntities(PhysicsCharacter.class);
-        movements = entityData.getEntities(PhysicsCharacter.class, PhysicsCharacterMovement.class);
-        stickySet = entityData.getEntities(PhysicsCharacter.class, LinearVelocity.class, AngularVelocity.class, InAir.class);
         bulletSystem.getPhysicsSpace().addTickListener(this);
 
         inAirSystem = new InAirSystem();
-        clampVelocitySystem = new ClampVelocitySystem();
+        stickySystem = new StickySystem();
+        //clampVelocitySystem = new ClampVelocitySystem();
         characterAccelerationSystem = new CharacterAccelerationSystem();
         slowDownSystem = new SlowDownSystem();
         bulletSystem.addPhysicsSystem(inAirSystem);
         //bulletSystem.addPhysicsSystem(clampVelocitySystem);
         bulletSystem.addPhysicsSystem(characterAccelerationSystem);
         bulletSystem.addPhysicsSystem(slowDownSystem);
+        bulletSystem.addPhysicsSystem(stickySystem);
     }
 
     @Override
     public void destroy(EntityData entityData, BulletSystem bulletSystem) {
         bulletSystem.removePhysicsSystem(inAirSystem);
+        bulletSystem.removePhysicsSystem(stickySystem);
         //bulletSystem.removePhysicsSystem(clampVelocitySystem);
         bulletSystem.removePhysicsSystem(characterAccelerationSystem);
         bulletSystem.removePhysicsSystem(slowDownSystem);
         bulletSystem.getPhysicsSpace().removeTickListener(this);
         characters.release();
-        movements.release();
-        stickySet.release();
     }
 
     @Override
@@ -77,21 +73,6 @@ public final class PhysicsCharacterSystem implements PhysicsSystem, PhysicsTickL
                 }
             }
         });
-        /*movements.applyChanges();
-        movements.forEach(e -> {
-            //apply every tick new imupls becaus it will be used every tick
-            Vector3f movement = e.get(PhysicsCharacterMovement.class).getMovement();
-            e.set(new Force(movement.mult(1.65f).mult(e.get(PhysicsCharacter.class).getMass()).mult(1.5f), new Vector3f()));
-        });
-        stickySet.applyChanges();
-        stickySet.forEach(e -> {
-            Vector3f velocity = e.get(LinearVelocity.class).getVelocity();
-            if(velocity.y > 0){
-                Vector3f newVelocity = velocity.clone();
-                newVelocity.y = 0;
-                e.set(new WarpVelocity(newVelocity, e.get(AngularVelocity.class).getVelocity()));
-            }
-        });*/
     }
 
     @Override
