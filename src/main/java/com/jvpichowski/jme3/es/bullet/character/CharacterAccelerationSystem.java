@@ -30,7 +30,14 @@ final class CharacterAccelerationSystem extends BasePhysicsSystem {
             float diffSquared = move2d.lengthSquared() - velo2d.project(move2d).lengthSquared();
             if(!Float.isNaN(diffSquared)){
                 if(diffSquared > 0) { //only add a force if the body is too slow. Slow down will be handled in a different system
-                    Vector3f force = movement.mult(mass).mult(diffSquared); //TODO 2d?
+                    Vector3f force = movement.mult(mass).mult(diffSquared);
+                    //force.y = 0; commented out because the user should be able to add jumps
+
+                    //let the force point towards the ground will reduce the jumping if you start running from
+                    //a hill but it will make the effect of the friction bigger
+                    //Vector3f forceDir = force.normalize();
+                    //forceDir.y = -0.5f;
+                    //force = force.project(forceDir);
                     entity.set(new CentralForce(force));
                 }
             }
