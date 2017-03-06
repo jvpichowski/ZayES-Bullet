@@ -13,7 +13,7 @@ import com.simsilica.es.EntitySet;
 import java.util.LinkedList;
 
 /**
- * Created by jan on 05.03.2017.
+ * Checks by casting a ray. Maybe it's better to get the colliding objects and get the normal of the hitpoint.
  */
 final class InAirSystem implements PhysicsSystem, PhysicsTickListener {
 

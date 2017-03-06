@@ -16,6 +16,9 @@ import com.simsilica.es.EntitySet;
 public final class PhysicsCharacterSystem implements PhysicsSystem, PhysicsTickListener {
 
     private InAirSystem inAirSystem;
+    private ClampVelocitySystem clampVelocitySystem;
+    private CharacterAccelerationSystem characterAccelerationSystem;
+    private SlowDownSystem slowDownSystem;
 
     private EntityData entityData;
     private EntitySet characters;
@@ -32,12 +35,21 @@ public final class PhysicsCharacterSystem implements PhysicsSystem, PhysicsTickL
         bulletSystem.getPhysicsSpace().addTickListener(this);
 
         inAirSystem = new InAirSystem();
+        clampVelocitySystem = new ClampVelocitySystem();
+        characterAccelerationSystem = new CharacterAccelerationSystem();
+        slowDownSystem = new SlowDownSystem();
         bulletSystem.addPhysicsSystem(inAirSystem);
+        //bulletSystem.addPhysicsSystem(clampVelocitySystem);
+        bulletSystem.addPhysicsSystem(characterAccelerationSystem);
+        bulletSystem.addPhysicsSystem(slowDownSystem);
     }
 
     @Override
     public void destroy(EntityData entityData, BulletSystem bulletSystem) {
         bulletSystem.removePhysicsSystem(inAirSystem);
+        //bulletSystem.removePhysicsSystem(clampVelocitySystem);
+        bulletSystem.removePhysicsSystem(characterAccelerationSystem);
+        bulletSystem.removePhysicsSystem(slowDownSystem);
         bulletSystem.getPhysicsSpace().removeTickListener(this);
         characters.release();
         movements.release();
@@ -49,7 +61,7 @@ public final class PhysicsCharacterSystem implements PhysicsSystem, PhysicsTickL
         characters.applyChanges();
         characters.forEach(e -> {
             PhysicsCharacter character = e.get(PhysicsCharacter.class);
-            e.set(new Friction(0.65f));
+            e.set(new Friction(1.65f));
             e.set(new Factor(new Vector3f(1,1,1), new Vector3f(0,0,0)));
             RigidBody rigidBody = entityData.getComponent(e.getId(), RigidBody.class);
             if(rigidBody == null || rigidBody.getMass() != character.getMass()) {
@@ -65,11 +77,11 @@ public final class PhysicsCharacterSystem implements PhysicsSystem, PhysicsTickL
                 }
             }
         });
-        movements.applyChanges();
+        /*movements.applyChanges();
         movements.forEach(e -> {
             //apply every tick new imupls becaus it will be used every tick
             Vector3f movement = e.get(PhysicsCharacterMovement.class).getMovement();
-            e.set(new Impulse(movement, new Vector3f()));
+            e.set(new Force(movement.mult(1.65f).mult(e.get(PhysicsCharacter.class).getMass()).mult(1.5f), new Vector3f()));
         });
         stickySet.applyChanges();
         stickySet.forEach(e -> {
@@ -79,7 +91,7 @@ public final class PhysicsCharacterSystem implements PhysicsSystem, PhysicsTickL
                 newVelocity.y = 0;
                 e.set(new WarpVelocity(newVelocity, e.get(AngularVelocity.class).getVelocity()));
             }
-        });
+        });*/
     }
 
     @Override

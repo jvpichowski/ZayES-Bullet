@@ -4,9 +4,11 @@ import com.jme3.app.FlyCamAppState;
 import com.jme3.app.SimpleApplication;
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.debug.BulletDebugAppState;
+import com.jme3.font.BitmapText;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
+import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
@@ -19,6 +21,7 @@ import com.jvpichowski.jme3.states.DebugViewState;
 import com.jvpichowski.jme3.states.ESBulletState;
 import com.simsilica.es.EntityData;
 import com.simsilica.es.EntityId;
+import com.simsilica.es.WatchedEntity;
 import com.simsilica.es.base.DefaultEntityData;
 
 /**
@@ -34,6 +37,8 @@ public class CharacterTest extends SimpleApplication implements ActionListener {
 
     private final EntityData entityData;
     private EntityId character;
+    private BitmapText infoText;
+    private WatchedEntity characterSpeed;
 
     public CharacterTest(EntityData entityData){
         super(new FlyCamAppState(), new ESBulletState(entityData), new CameraPositionPrinter());
@@ -52,7 +57,7 @@ public class CharacterTest extends SimpleApplication implements ActionListener {
         entityData.setComponents(plane,
                 new WarpPosition(new Vector3f(), Quaternion.DIRECTION_Z.clone()),
                 new RigidBody(false, 0),
-                new CustomShape(new BoxCollisionShape(new Vector3f(50, 0.5f, 50))),
+                new CustomShape(new BoxCollisionShape(new Vector3f(250, 0.5f, 250))),
                 new Friction(0.65f));
 
         EntityId ramp = entityData.createEntity();
@@ -68,6 +73,13 @@ public class CharacterTest extends SimpleApplication implements ActionListener {
                 new RigidBody(false, 0),
                 new CustomShape(new BoxCollisionShape(new Vector3f(10, 0.5f, 10))),
                 new Friction(0.1f));
+
+        for(int i = 0; i < 20; i++){
+            EntityId box = entityData.createEntity();
+            entityData.setComponents(box, new RigidBody(false, 0),
+                    new WarpPosition(new Vector3f(-20, 1, -20+2*i), new Quaternion()),
+                    new BoxShape());
+        }
 
 
         character = entityData.createEntity();
@@ -90,11 +102,23 @@ public class CharacterTest extends SimpleApplication implements ActionListener {
         getInputManager().addMapping("STEP_LEFT", new KeyTrigger(KeyInput.KEY_J));
         getInputManager().addMapping("STEP_RIGHT", new KeyTrigger(KeyInput.KEY_L));
         getInputManager().addListener(this, "FORWARD", "BACKWARD", "STEP_LEFT", "STEP_RIGHT");
+
+        infoText = new BitmapText(guiFont, false);
+        infoText.setSize(guiFont.getCharSet().getRenderedSize());      // font size
+        infoText.setColor(ColorRGBA.White);                             // font color
+        infoText.setText("");             // the text
+        infoText.setLocalTranslation(0, infoText.getLineHeight(), 0); // position
+        guiNode.attachChild(infoText);
+
+        characterSpeed = entityData.watchEntity(character, LinearVelocity.class);
     }
 
     @Override
     public void update() {
         super.update();
+        characterSpeed.applyChanges();
+        infoText.setText("velocity: "+characterSpeed.get(LinearVelocity.class).getVelocity().length());
+        infoText.setLocalTranslation(0, infoText.getLineHeight()*infoText.getLineCount(), 0); // position
     }
 
 
