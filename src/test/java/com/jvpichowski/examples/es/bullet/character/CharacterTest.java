@@ -41,7 +41,7 @@ public class CharacterTest extends SimpleApplication implements ActionListener {
     private WatchedEntity characterSpeed;
 
     public CharacterTest(EntityData entityData){
-        super(new FlyCamAppState(), new ESBulletState(entityData), new CameraPositionPrinter());
+        super(new FlyCamAppState(), new ESBulletState(entityData, ESBulletState.ThreadingType.DECOUPLED), new CameraPositionPrinter());
         this.entityData = entityData;
     }
 
@@ -60,13 +60,15 @@ public class CharacterTest extends SimpleApplication implements ActionListener {
                 new CustomShape(new BoxCollisionShape(new Vector3f(250, 0.5f, 250))),
                 new Friction(0.65f));
 
+        //rough ramp shouldn't slip here
         EntityId ramp = entityData.createEntity();
         entityData.setComponents(ramp,
                 new WarpPosition(new Vector3f(0,1,0), new Quaternion().fromAngleAxis(FastMath.DEG_TO_RAD * 10, Vector3f.UNIT_Z)),
                 new RigidBody(false, 0),
                 new CustomShape(new BoxCollisionShape(new Vector3f(10, 0.5f, 10))),
-                new Friction(0.1f));
+                new Friction(0.6f));
 
+        //slippy ramp
         EntityId ramp2 = entityData.createEntity();
         entityData.setComponents(ramp2,
                 new WarpPosition(new Vector3f(19.5f,1,0), new Quaternion().fromAngleAxis(FastMath.DEG_TO_RAD * -10, Vector3f.UNIT_Z)),
@@ -74,6 +76,7 @@ public class CharacterTest extends SimpleApplication implements ActionListener {
                 new CustomShape(new BoxCollisionShape(new Vector3f(10, 0.5f, 10))),
                 new Friction(0.1f));
 
+        //some boxes for distance measures
         for(int i = 0; i < 20; i++){
             EntityId box = entityData.createEntity();
             entityData.setComponents(box, new RigidBody(false, 0),

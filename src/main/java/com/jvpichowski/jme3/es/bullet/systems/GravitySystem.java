@@ -42,6 +42,7 @@ public final class GravitySystem implements PhysicsSystem, PhysicsTickListener {
 
     @Override
     public void prePhysicsTick(PhysicsSpace space, float tpf) {
+        gravities.applyChanges();
         gravities.forEach(entity -> {
             PhysicsRigidBody rigidBody = rigidBodies.getObject(entity.getId());
             if(rigidBody != null){
@@ -51,8 +52,5 @@ public final class GravitySystem implements PhysicsSystem, PhysicsTickListener {
     }
 
     @Override
-    public void physicsTick(PhysicsSpace space, float tpf) {
-        space.getRigidBodyList().forEach(rigidBody -> entityData.setComponent((EntityId)rigidBody.getUserObject(),
-                new Gravity(rigidBody.getGravity())));
-    }
+    public void physicsTick(PhysicsSpace space, float tpf) { }
 }

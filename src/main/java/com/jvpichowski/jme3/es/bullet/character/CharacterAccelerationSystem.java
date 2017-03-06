@@ -29,9 +29,14 @@ final class CharacterAccelerationSystem extends BasePhysicsSystem {
             //TODO remove 2d calculations they are unnecessary detailed here
             //this is a simple approach. It doesn't use the direction of the movement and the velocity
             float diffSquared = move2d.lengthSquared() - velo2d.project(move2d).lengthSquared();
-            if(!Float.isNaN(diffSquared)){
+            if(!Float.isNaN(diffSquared)){ //NAN if movement = (0,0,0)
                 if(diffSquared > 0) { //only add a force if the body is too slow. Slow down will be handled in a different system
-                    Vector3f force = movement.mult(mass).mult(diffSquared);
+                    Vector3f force;
+                    if(diffSquared < 1){
+                        force = movement.mult(mass);//.mult(FastMath.sqr(diffSquared)*10);
+                    }else{
+                        force = movement.mult(mass).mult(diffSquared);
+                    }
                     //force.y = 0; commented out because the user should be able to add jumps
 
                     //let the force point towards the ground will reduce the jumping if you start running from
