@@ -7,7 +7,7 @@ import com.simsilica.es.EntityComponent;
  * Set a central force to a physics object. It will be applied in the next physics tick
  * and then removed from the entity.
  */
-public final class CentralForce implements EntityComponent {
+public final class CentralForce implements ForceComponent {
 
     private Vector3f force;
 
@@ -19,7 +19,17 @@ public final class CentralForce implements EntityComponent {
         this.force = new Vector3f();
     }
 
+    @Override
     public Vector3f getForce() {
         return force;
+    }
+
+    /**
+     *
+     * @return null because it's a central force
+     */
+    @Override
+    public Vector3f getLocation() {
+        return null;
     }
 }

@@ -10,7 +10,7 @@ import com.simsilica.es.EntityComponent;
  * Be aware that a torque consists of a moment of inertia
  * and angular acceleration.
  */
-public final class Torque implements EntityComponent{
+public final class Torque implements TorqueComponent{
 
     private Vector3f torque;
 
@@ -22,6 +22,7 @@ public final class Torque implements EntityComponent{
         this.torque = new Vector3f();
     }
 
+    @Override
     public Vector3f getTorque() {
         return torque;
     }

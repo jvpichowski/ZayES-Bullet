@@ -11,7 +11,7 @@ import com.simsilica.es.EntityComponent;
  * Be aware that a force consists of mass and acceleration.
  * To lift 10kg against the gravity you need at least 10*10N
  */
-public final class Force implements EntityComponent {
+public final class Force implements ForceComponent {
 
     private final Vector3f force;
     private final Vector3f location;
@@ -25,10 +25,12 @@ public final class Force implements EntityComponent {
         this(new Vector3f(), new Vector3f());
     }
 
+    @Override
     public Vector3f getForce() {
         return force;
     }
 
+    @Override
     public Vector3f getLocation() {
         return location;
     }

@@ -201,6 +201,19 @@ public final class BulletSystem implements PhysicsTickListener{
     }
 
     /**
+     *
+     * @return the extensible force system or null if no extensible force system is present
+     */
+    public ExtensibleForceSystem getForceSystem() {
+        for (PhysicsSystem physicsSystem : physicsSystems) {
+            if(physicsSystem instanceof ExtensibleForceSystem){
+                return (ExtensibleForceSystem) physicsSystem;
+            }
+        }
+        return null;
+    }
+
+    /**
      * DO NOT CALL
      *
      * @param space
