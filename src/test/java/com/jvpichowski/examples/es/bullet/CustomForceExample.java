@@ -14,7 +14,7 @@ import com.simsilica.es.EntityId;
 import com.simsilica.es.base.DefaultEntityData;
 
 /**
- * THis example shows how you could define multiple forces which act on a single entity.
+ * This example shows how you could define multiple forces which act on a single entity.
  */
 public class CustomForceExample extends SimpleApplication {
 
