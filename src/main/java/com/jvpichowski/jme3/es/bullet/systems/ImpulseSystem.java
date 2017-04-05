@@ -7,6 +7,7 @@ import com.jvpichowski.jme3.es.ObjectContainer;
 import com.jvpichowski.jme3.es.bullet.BulletSystem;
 import com.jvpichowski.jme3.es.bullet.PhysicsInstanceFilter;
 import com.jvpichowski.jme3.es.bullet.PhysicsSystem;
+import com.jvpichowski.jme3.es.bullet.components.CombinedImpulses;
 import com.jvpichowski.jme3.es.bullet.components.Impulse;
 import com.jvpichowski.jme3.es.bullet.components.TorqueImpulse;
 import com.simsilica.es.EntityData;
@@ -22,6 +23,7 @@ public final class ImpulseSystem implements PhysicsSystem, PhysicsTickListener {
     private ObjectContainer<PhysicsRigidBody> rigidBodies;
     private EntitySet impulses;
     private EntitySet torqueImpulses;
+    private EntitySet combinedImpulses;
 
     @Override
     public void initialize(EntityData entityData, BulletSystem bulletSystem) {
@@ -31,9 +33,11 @@ public final class ImpulseSystem implements PhysicsSystem, PhysicsTickListener {
         if(filter == null) {
             impulses = entityData.getEntities(Impulse.class);
             torqueImpulses = entityData.getEntities(TorqueImpulse.class);
+            combinedImpulses = entityData.getEntities(CombinedImpulses.class);
         }else {
             impulses = entityData.getEntities(filter, filter.getComponentType(), Impulse.class);
             torqueImpulses = entityData.getEntities(filter, filter.getComponentType(), TorqueImpulse.class);
+            combinedImpulses = entityData.getEntities(filter, filter.getComponentType(), CombinedImpulses.class);
         }
         bulletSystem.getPhysicsSpace().addTickListener(this);
     }
@@ -43,6 +47,7 @@ public final class ImpulseSystem implements PhysicsSystem, PhysicsTickListener {
         bulletSystem.getPhysicsSpace().removeTickListener(this);
         impulses.release();
         torqueImpulses.release();
+        combinedImpulses.release();
     }
 
 
@@ -64,6 +69,17 @@ public final class ImpulseSystem implements PhysicsSystem, PhysicsTickListener {
                 rigidBody.applyTorqueImpulse(entity.get(TorqueImpulse.class).getImpulse());
             }
             entityData.removeComponent(entity.getId(), TorqueImpulse.class);
+        });
+        combinedImpulses.applyChanges();
+        combinedImpulses.forEach(entity -> {
+            PhysicsRigidBody rigidBody = rigidBodies.getObject(entity.getId());
+            if(rigidBody != null){
+                CombinedImpulses impulses = entity.get(CombinedImpulses.class);
+                for(int i = 0; i < impulses.numImpulses(); i++){
+                    rigidBody.applyImpulse(impulses.getImpulse(i), impulses.getRelativeLocation(i));
+                }
+            }
+            entity.set(new CombinedImpulses());
         });
     }
 
