@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Manages a set of EntityLogics. It executes their lifecycle methods when update() is called.
+ * Manages a set of EntityLogic's. It executes their lifecycle methods when update() is called.
  */
 public final class SimpleLogicManager {
 
@@ -24,7 +24,7 @@ public final class SimpleLogicManager {
             entities.getAddedEntities().forEach(logic::onAdd);
             entities.getChangedEntities().forEach(logic::onChanged);
             entities.getRemovedEntities().forEach(logic::onRemove);
-            entities.forEach(logic::onRun);
+            entities.forEach(logic::onRun); //removed entities are not in the set anymore
         });
     }
 
