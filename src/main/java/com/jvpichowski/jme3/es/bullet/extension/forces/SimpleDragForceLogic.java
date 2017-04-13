@@ -21,30 +21,32 @@ public final class SimpleDragForceLogic extends BaseSimpleEntityLogic {
      * @param bulletSystem
      */
     public void initLogic(BulletSystem bulletSystem){
+        //this is a custom initialization method which must be called by the creator of the logic instance.
+        //you can add any method you want to the logic.
+
         bulletSystem.getForceSystem().registerForce(SimpleDragForce.class);
         //TODO unregister on destroy
     }
 
     @Override
-    public void init() {
-        updateForce();
-    }
+    public void run() {
+        //this method is called every time when the logic manager wants to update its attached logic's.
 
-    @Override
-    public void update() {
-        updateForce();
+        //obtain the values
+        Vector3f v = get(LinearVelocity.class).getVelocity();
+        float factor = get(SimpleDrag.class).getFactor();
+        //do the logic
+        Vector3f force = v.clone().normalizeLocal().multLocal(-factor*v.lengthSquared());
+        //save the results
+        set(new SimpleDragForce(force));
     }
 
     @Override
     public void destroy() {
-        clear(DragMediumForce.class);
-    }
+        //this method is called if a component from the entity is removed on which this logic depends.
 
-    private void updateForce(){
-        Vector3f v = get(LinearVelocity.class).getVelocity();
-        float factor = get(SimpleDrag.class).getFactor();
-        Vector3f force = v.clone().normalizeLocal().multLocal(-factor*v.lengthSquared());
-        set(new SimpleDragForce(force));
+        //we don't need this component any more. Remove it from the entity to prevent mysterious errors..
+        clear(SimpleDragForce.class);
     }
 
 }

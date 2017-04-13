@@ -21,21 +21,7 @@ public final class DragMediumLogic extends BaseSimpleEntityLogic {
     }
 
     @Override
-    public void init() {
-        updateForce();
-    }
-
-    @Override
-    public void update() {
-        updateForce();
-    }
-
-    @Override
-    public void destroy() {
-        clear(DragMediumForce.class);
-    }
-
-    private void updateForce(){
+    public void run() {
         Vector3f v = get(LinearVelocity.class).getVelocity();
         float area = get(DragMedium.class).getArea();
         float density = get(DragMedium.class).getDensity();
@@ -44,5 +30,9 @@ public final class DragMediumLogic extends BaseSimpleEntityLogic {
         set(new DragMediumForce(force));
     }
 
+    @Override
+    public void destroy() {
+        clear(DragMediumForce.class);
+    }
 
 }

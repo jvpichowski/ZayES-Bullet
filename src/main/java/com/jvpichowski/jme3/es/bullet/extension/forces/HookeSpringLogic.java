@@ -21,13 +21,12 @@ public final class HookeSpringLogic extends BaseSimpleEntityLogic {
     }
 
     @Override
-    public void init() {
-        updateForce();
-    }
-
-    @Override
-    public void update() {
-        updateForce();
+    public void run() {
+        Vector3f location = get(PhysicsPosition.class).getLocation();
+        Vector3f equilibriumLocation = get(HookeSpring.class).getEquilibriumLocation();
+        float springConstant = get(HookeSpring.class).getConstant();
+        Vector3f force = equilibriumLocation.subtract(location).mult(springConstant);
+        set(new HookeSpringForce(force, get(HookeSpring.class).getConnectionLocation()));
     }
 
     @Override
@@ -35,11 +34,4 @@ public final class HookeSpringLogic extends BaseSimpleEntityLogic {
         clear(HookeSpringForce.class);
     }
 
-    private void updateForce(){
-        Vector3f location = get(PhysicsPosition.class).getLocation();
-        Vector3f equilibriumLocation = get(HookeSpring.class).getEquilibriumLocation();
-        float springConstant = get(HookeSpring.class).getConstant();
-        Vector3f force = equilibriumLocation.subtract(location).mult(springConstant);
-        set(new HookeSpringForce(force, get(HookeSpring.class).getConnectionLocation()));
-    }
 }
