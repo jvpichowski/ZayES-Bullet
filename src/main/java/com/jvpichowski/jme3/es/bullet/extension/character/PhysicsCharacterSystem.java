@@ -1,4 +1,4 @@
-package com.jvpichowski.jme3.es.bullet.character;
+package com.jvpichowski.jme3.es.bullet.extension.character;
 
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.PhysicsTickListener;

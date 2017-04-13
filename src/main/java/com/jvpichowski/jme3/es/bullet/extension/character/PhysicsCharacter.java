@@ -1,4 +1,4 @@
-package com.jvpichowski.jme3.es.bullet.character;
+package com.jvpichowski.jme3.es.bullet.extension.character;
 
 import com.simsilica.es.EntityComponent;
 

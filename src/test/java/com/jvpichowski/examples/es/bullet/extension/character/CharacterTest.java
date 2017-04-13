@@ -1,4 +1,4 @@
-package com.jvpichowski.examples.es.bullet.character;
+package com.jvpichowski.examples.es.bullet.extension.character;
 
 import com.jme3.app.FlyCamAppState;
 import com.jme3.app.SimpleApplication;
@@ -12,9 +12,9 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import com.jvpichowski.jme3.es.bullet.character.PhysicsCharacter;
-import com.jvpichowski.jme3.es.bullet.character.PhysicsCharacterSystem;
-import com.jvpichowski.jme3.es.bullet.character.PhysicsCharacterMovement;
+import com.jvpichowski.jme3.es.bullet.extension.character.PhysicsCharacter;
+import com.jvpichowski.jme3.es.bullet.extension.character.PhysicsCharacterSystem;
+import com.jvpichowski.jme3.es.bullet.extension.character.PhysicsCharacterMovement;
 import com.jvpichowski.jme3.es.bullet.components.*;
 import com.jvpichowski.jme3.states.CameraPositionPrinter;
 import com.jvpichowski.jme3.states.DebugViewState;
