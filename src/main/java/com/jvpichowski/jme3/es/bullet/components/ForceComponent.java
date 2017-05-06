@@ -13,7 +13,7 @@ import com.simsilica.es.EntityComponent;
 public interface ForceComponent extends EntityComponent {
 
     /**
-     *
+     * never return null!
      * @return the linear force which should be applied to the physics object
      */
     Vector3f getForce();
