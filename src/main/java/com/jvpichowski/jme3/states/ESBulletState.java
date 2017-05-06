@@ -35,6 +35,11 @@ public final class ESBulletState extends BaseAppState {
     private volatile boolean running = false; //true if the system is enabled
     private volatile boolean decoupledRunning = false; //true if the decoupled physic is running
 
+    /**
+     * Creates a new ESBulletState with sequential threading.
+     *
+     * @param entityData
+     */
     public ESBulletState(EntityData entityData) {
         this(entityData, ThreadingType.SEQUENTIAL);
     }
