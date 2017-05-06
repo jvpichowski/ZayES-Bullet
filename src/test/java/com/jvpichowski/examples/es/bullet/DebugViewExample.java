@@ -7,7 +7,7 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jvpichowski.jme3.es.bullet.components.*;
 import com.jvpichowski.jme3.states.ESBulletState;
-import com.jvpichowski.jme3.states.DebugViewState;
+import com.jvpichowski.jme3.states.ESDebugViewState;
 import com.simsilica.es.EntityData;
 import com.simsilica.es.EntityId;
 import com.simsilica.es.base.DefaultEntityData;
@@ -35,7 +35,7 @@ public class DebugViewExample extends SimpleApplication {
         //create a new debug view state
         //you have to add the same CustomShapeFactory which you have added to the BulletSystem
         //if no factory is given to the constructor the default factory will be used (CollisionShapeFactory)
-        DebugViewState debugView = new DebugViewState(entityData, getRootNode());
+        ESDebugViewState debugView = new ESDebugViewState(entityData, getRootNode());
         getStateManager().attach(debugView);
 
         EntityId sphere = entityData.createEntity();
