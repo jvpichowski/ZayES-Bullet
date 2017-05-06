@@ -8,7 +8,6 @@ import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.SphereCollisionShape;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
-import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Mesh;
@@ -28,7 +27,7 @@ import java.util.logging.Logger;
  * A new debug state.
  * Supports at the moment only BoxCollisionShapes and SphereCollisionShapes
  */
-public final class DebugViewState extends BaseAppState {
+public final class ESDebugViewState extends BaseAppState {
 
     private final EntityData entityData;
     //private final ViewPort viewPort;
@@ -42,14 +41,14 @@ public final class DebugViewState extends BaseAppState {
     private PositionMarkers positionMarkers;
 
 
-    public DebugViewState(EntityData entityData, /*ViewPort viewPort*/Node node, CustomShapeFactory customShapeFactory) {
+    public ESDebugViewState(EntityData entityData, /*ViewPort viewPort*/Node node, CustomShapeFactory customShapeFactory) {
         this.entityData = entityData;
         //this.viewPort = viewPort;
         this.parentNode = node;
         this.customShapeFactory = customShapeFactory;
     }
 
-    public DebugViewState(EntityData entityData, Node node) {
+    public ESDebugViewState(EntityData entityData, Node node) {
         this(entityData, node, new CollisionShapeFactory());
     }
 
