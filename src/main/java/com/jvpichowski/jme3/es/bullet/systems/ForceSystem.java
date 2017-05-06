@@ -13,6 +13,7 @@ import com.simsilica.es.EntitySet;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -139,12 +140,16 @@ public final class ForceSystem implements PhysicsSystem, PhysicsTickListener, Ex
             set.applyChanges();
             set.forEach(entity -> {
                 ForceComponent force = entity.get(comp);
-                PhysicsRigidBody rigidBody = rigidBodies.getObject(entity.getId());
-                if(rigidBody != null){
-                    if(force.getLocation() == null){
-                        rigidBody.applyCentralForce(force.getForce());
-                    }else{
-                        rigidBody.applyForce(force.getForce(), force.getLocation());
+                if (force.getForce() == null) {
+                    LOGGER.log(Level.WARNING, "Force vector of {0} is null", force);
+                } else {
+                    PhysicsRigidBody rigidBody = rigidBodies.getObject(entity.getId());
+                    if (rigidBody != null) {
+                        if (force.getLocation() == null) {
+                            rigidBody.applyCentralForce(force.getForce());
+                        } else {
+                            rigidBody.applyForce(force.getForce(), force.getLocation());
+                        }
                     }
                 }
             });
