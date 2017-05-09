@@ -25,12 +25,12 @@ public final class RigidBodyPropertySystem implements PhysicsSystem, PhysicsTick
         rigidBodies = bulletSystem.getRigidBodies();
         frictions = entityData.getEntities(Friction.class);
         factors = entityData.getEntities(Factor.class);
-        bulletSystem.getPhysicsSpace().addTickListener(this);
+        bulletSystem.addTickListener(this, true, true);
     }
 
     @Override
     public void destroy(EntityData entityData, BulletSystem bulletSystem) {
-        bulletSystem.getPhysicsSpace().removeTickListener(this);
+        bulletSystem.removeTickListener(this);
         frictions.release();
         factors.release();
     }

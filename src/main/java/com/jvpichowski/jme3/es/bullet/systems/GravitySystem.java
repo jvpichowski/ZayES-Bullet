@@ -31,12 +31,12 @@ public final class GravitySystem implements PhysicsSystem, PhysicsTickListener {
         }else{
             this.gravities = entityData.getEntities(filter, filter.getComponentType(), Gravity.class);
         }
-        bulletSystem.getPhysicsSpace().addTickListener(this);
+        bulletSystem.addTickListener(this, true, true);
     }
 
     @Override
     public void destroy(EntityData entityData, BulletSystem bulletSystem) {
-        bulletSystem.getPhysicsSpace().removeTickListener(this);
+        bulletSystem.removeTickListener(this);
         gravities.release();
     }
 

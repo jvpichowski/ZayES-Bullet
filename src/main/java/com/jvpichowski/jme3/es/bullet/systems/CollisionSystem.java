@@ -41,14 +41,14 @@ public final class CollisionSystem implements PhysicsSystem, PhysicsCollisionLis
             collisionGroups = entityData.getEntities(filter, filter.getComponentType(), CollisionGroup.class);
         }
         rigidBodies = bulletSystem.getRigidBodies();
-        bulletSystem.getPhysicsSpace().addTickListener(this);
+        bulletSystem.addTickListener(this, true, true);
         bulletSystem.getPhysicsSpace().addCollisionListener(this);
     }
 
     @Override
     public void destroy(EntityData entityData, BulletSystem bulletSystem) {
         bulletSystem.getPhysicsSpace().removeCollisionListener(this);
-        bulletSystem.getPhysicsSpace().removeTickListener(this);
+        bulletSystem.removeTickListener(this);
         collidingObjects.release();
         collisionGroups.release();
     }

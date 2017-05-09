@@ -38,12 +38,12 @@ public final class PhysicsPositionSystem implements PhysicsSystem, PhysicsTickLi
             physicsPositions = entityData.getEntities(instanceFilter, instanceFilter.getComponentType(), PhysicsPosition.class);
             warpPositions = entityData.getEntities(instanceFilter, instanceFilter.getComponentType(), WarpPosition.class);
         }
-        bulletSystem.getPhysicsSpace().addTickListener(this);
+        bulletSystem.addTickListener(this, true, true);
     }
 
     @Override
     public void destroy(EntityData entityData, BulletSystem bulletSystem) {
-        bulletSystem.getPhysicsSpace().removeTickListener(this);
+        bulletSystem.removeTickListener(this);
         physicsPositions.release();
         warpPositions.release();
     }

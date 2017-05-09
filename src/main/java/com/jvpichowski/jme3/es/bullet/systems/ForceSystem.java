@@ -48,12 +48,12 @@ public final class ForceSystem implements PhysicsSystem, PhysicsTickListener, Ex
             centralForces = entityData.getEntities(filter, filter.getComponentType(), CentralForce.class);
             torques = entityData.getEntities(filter, filter.getComponentType(), Torque.class);
         }
-        bulletSystem.getPhysicsSpace().addTickListener(this);
+        bulletSystem.addTickListener(this, true, true);
     }
 
     @Override
     public void destroy(EntityData entityData, BulletSystem bulletSystem) {
-        bulletSystem.getPhysicsSpace().removeTickListener(this);
+        bulletSystem.removeTickListener(this);
         forces.release();
         centralForces.release();
         torques.release();

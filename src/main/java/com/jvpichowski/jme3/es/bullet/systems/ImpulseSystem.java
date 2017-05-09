@@ -39,12 +39,12 @@ public final class ImpulseSystem implements PhysicsSystem, PhysicsTickListener {
             torqueImpulses = entityData.getEntities(filter, filter.getComponentType(), TorqueImpulse.class);
             combinedImpulses = entityData.getEntities(filter, filter.getComponentType(), CombinedImpulses.class);
         }
-        bulletSystem.getPhysicsSpace().addTickListener(this);
+        bulletSystem.addTickListener(this, true, true);
     }
 
     @Override
     public void destroy(EntityData entityData, BulletSystem bulletSystem) {
-        bulletSystem.getPhysicsSpace().removeTickListener(this);
+        bulletSystem.removeTickListener(this);
         impulses.release();
         torqueImpulses.release();
         combinedImpulses.release();

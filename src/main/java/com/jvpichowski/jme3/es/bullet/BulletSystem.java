@@ -17,7 +17,7 @@ import java.util.List;
  * The main system. Create an instance and call update to update
  * the physics simulation. Don't forget to call destroy in the end.
  */
-public final class BulletSystem implements PhysicsTickListener{
+public final class BulletSystem {
 
     private PhysicsInstanceFilter instanceFilter;
 
@@ -33,6 +33,7 @@ public final class BulletSystem implements PhysicsTickListener{
 
     //This list contains all physics subsystems
     private List<PhysicsSystem> physicsSystems = new LinkedList<>();
+    private OrderedPhysicsTickListener orderedTickListener = new OrderedPhysicsTickListener();
 
     /**
      *
@@ -76,7 +77,8 @@ public final class BulletSystem implements PhysicsTickListener{
             ghostObjects = new GhostObjectContainer(entityData, physicsSpace, customShapeFactory, instanceFilter);
         }
 
-        physicsSpace.addTickListener(this);
+        //will be called before every other tick listener
+        physicsSpace.addTickListener(orderedTickListener);
         //physicsSpace.addCollisionObject();
         //physicsSpace.addCollisionGroupListener();
 
@@ -89,12 +91,12 @@ public final class BulletSystem implements PhysicsTickListener{
 
         if(systems.length == 0){
             physicsSystems.add(new CollisionSystem());
-            physicsSystems.add(new PhysicsPositionSystem());
-            physicsSystems.add(new ForceSystem());
-            physicsSystems.add(new GravitySystem());
-            physicsSystems.add(new VelocitySystem());
-            physicsSystems.add(new ImpulseSystem());
             physicsSystems.add(new RigidBodyPropertySystem());
+            physicsSystems.add(new PhysicsPositionSystem());
+            physicsSystems.add(new VelocitySystem());
+            physicsSystems.add(new ForceSystem());
+            physicsSystems.add(new ImpulseSystem());
+            physicsSystems.add(new GravitySystem());
         }else{
             for(PhysicsSystem system : systems){
                 physicsSystems.add(system);
@@ -116,7 +118,7 @@ public final class BulletSystem implements PhysicsTickListener{
 
         //update physics
         physicsSpace.update(time/*,maxSteps*/);
-        physicsSpace.distributeEvents();
+        physicsSpace.distributeEvents(); //if you delete this you will get a memory leak!
     }
 
     /**
@@ -125,7 +127,7 @@ public final class BulletSystem implements PhysicsTickListener{
     public void destroy(){
         physicsSystems.forEach(physicsSystem -> physicsSystem.destroy(entityData, this));
 
-        physicsSpace.removeTickListener(this);
+        physicsSpace.removeTickListener(orderedTickListener);
         ghostObjects.stop();
         rigidBodies.stop();
 
@@ -135,7 +137,7 @@ public final class BulletSystem implements PhysicsTickListener{
 
     /**
      * Add a sub physics system which could be hooked in the life cycle
-     * of this physics space.
+     * of this physics space. The system will be executed after all other systems.
      *
      * @param physicsSystem
      */
@@ -214,32 +216,50 @@ public final class BulletSystem implements PhysicsTickListener{
     }
 
     /**
-     * DO NOT CALL
+     * Add a physics tick listener. This method helps to keep the order of execution clean.
+     * It is recommend to use this method to register listeners over the method from the PhysicsSystem.
      *
-     * @param space
-     * @param tpf
+     * @param listener
+     * @param preTickLast false if the new prePhysicsTick listener should be called before each others, true if afterwards
+     * @param tickLast false if the new physicsTick listener should be called before each other, true if afterwards
      */
-    @Override
-    public void prePhysicsTick(PhysicsSpace space, float tpf) {
-        //remove all collisions
-        //update rigid bodies
-        rigidBodies.update();
-        ghostObjects.update();
-        //copy position to physics
-
+    public void addTickListener(PhysicsTickListener listener, boolean preTickLast, boolean tickLast){
+        orderedTickListener.preTickOrder.add(preTickLast ? orderedTickListener.preTickOrder.size() : 0, listener);
+        orderedTickListener.tickOrder.add(tickLast ? orderedTickListener.tickOrder.size() : 0, listener);
     }
 
-    /**
-     * DO NOT CALL
-     *
-     * @param space
-     * @param tpf
-     */
-    @Override
-    public void physicsTick(PhysicsSpace space, float tpf) {
-        //copy position to es
+    public void removeTickListener(PhysicsTickListener listener){
+        orderedTickListener.preTickOrder.remove(listener);
+        orderedTickListener.tickOrder.remove(listener);
+    }
 
-        //safe changes to know at the next call which are updated by the user
-        //positionComponents.applyChanges(); //not good because of multithreading
+    private final class OrderedPhysicsTickListener implements PhysicsTickListener {
+
+        public List<PhysicsTickListener> preTickOrder = new LinkedList<>();
+        public List<PhysicsTickListener> tickOrder = new LinkedList<>();
+
+        /**
+         * Called before the physics is actually stepped, use to apply forces etc.
+         *
+         * @param space the physics space
+         * @param tpf   the time per frame in seconds
+         */
+        @Override
+        public void prePhysicsTick(PhysicsSpace space, float tpf) {
+            rigidBodies.update();
+            ghostObjects.update();
+            preTickOrder.forEach(l -> l.prePhysicsTick(space, tpf));
+        }
+
+        /**
+         * Called after the physics has been stepped, use to check for forces etc.
+         *
+         * @param space the physics space
+         * @param tpf   the time per frame in seconds
+         */
+        @Override
+        public void physicsTick(PhysicsSpace space, float tpf) {
+            tickOrder.forEach(l -> l.physicsTick(space, tpf));
+        }
     }
 }
