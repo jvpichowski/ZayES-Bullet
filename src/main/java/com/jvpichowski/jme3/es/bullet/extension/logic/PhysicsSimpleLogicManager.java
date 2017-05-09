@@ -3,6 +3,7 @@ package com.jvpichowski.jme3.es.bullet.extension.logic;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.PhysicsTickListener;
 import com.jvpichowski.jme3.es.bullet.BulletSystem;
+import com.jvpichowski.jme3.es.bullet.PhysicsSystem;
 import com.jvpichowski.jme3.es.logic.SimpleLogicManager;
 import com.simsilica.es.EntityData;
 
@@ -37,11 +38,11 @@ public final class PhysicsSimpleLogicManager {
         tickLogicManager = new SimpleLogicManager();
         preTickLogicManager.initialize(entityData);
         tickLogicManager.initialize(entityData);
-        bulletSystem.getPhysicsSpace().addTickListener(physicsTickListener);
+        bulletSystem.addTickListener(physicsTickListener, false, true);
     }
 
     public void destroy(){
-        bulletSystem.getPhysicsSpace().removeTickListener(physicsTickListener);
+        bulletSystem.removeTickListener(physicsTickListener);
         tickLogicManager.destroy();
         preTickLogicManager.destroy();
         tickLogicManager = null;
