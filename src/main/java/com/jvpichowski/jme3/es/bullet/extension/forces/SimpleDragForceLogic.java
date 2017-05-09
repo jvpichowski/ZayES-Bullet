@@ -25,7 +25,15 @@ public final class SimpleDragForceLogic extends BaseSimpleEntityLogic {
         //you can add any method you want to the logic.
 
         bulletSystem.getForceSystem().registerForce(SimpleDragForce.class);
-        //TODO unregister on destroy
+    }
+
+    /**
+     * Call this to free resources
+     *
+     * @param bulletSystem
+     */
+    public void destroyLogic(BulletSystem bulletSystem){
+        bulletSystem.getForceSystem().unregisterForce(SimpleDragForce.class);
     }
 
     @Override
