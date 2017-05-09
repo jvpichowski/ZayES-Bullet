@@ -36,7 +36,7 @@ public final class SimpleDragForceLogic extends BaseSimpleEntityLogic {
         Vector3f v = get(LinearVelocity.class).getVelocity();
         float factor = get(SimpleDrag.class).getFactor();
         //do the logic
-        Vector3f force = v.clone().normalizeLocal().multLocal(-factor*v.lengthSquared());
+        Vector3f force = v.normalize().multLocal(-factor*v.lengthSquared());
         //save the results
         set(new SimpleDragForce(force));
     }
