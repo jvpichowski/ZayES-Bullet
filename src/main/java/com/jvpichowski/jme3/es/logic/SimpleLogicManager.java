@@ -21,9 +21,10 @@ public final class SimpleLogicManager {
     public void update() {
         logics.forEach((logic, entities) -> {
             entities.applyChanges();
+            //first check the removed entities because they could be readded in the same tick
+            entities.getRemovedEntities().forEach(logic::onRemove);
             entities.getAddedEntities().forEach(logic::onAdd);
             entities.getChangedEntities().forEach(logic::onChanged);
-            entities.getRemovedEntities().forEach(logic::onRemove);
             entities.forEach(logic::onRun); //removed entities are not in the set anymore
         });
     }
