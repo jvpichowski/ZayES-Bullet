@@ -76,45 +76,7 @@ public final class ShapeViewState extends BaseAppState {
     public void update(float tpf) {
         if(!isEnabled()) return;
         containers.forEach(SpatialContainer::update);
-/*
-        shadedEntities.applyChanges();
-        shadedEntities.getAddedEntities().forEach(entity -> find(entity).forEach(spatial -> {
-            Material mat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
-            mat.setBoolean("UseMaterialColors",true);
-            mat.setColor("Diffuse", entity.get(ShadedColor.class).getDiffuse());
-            System.out.println(entity.get(ShadedColor.class).getDiffuse());
-            spatial.setMaterial(mat);
-        }));
-        shadedEntities.getChangedEntities().forEach(entity -> find(entity).forEach(spatial -> {
-            Material mat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
-            mat.setBoolean("UseMaterialColors",true);
-            mat.setColor("Diffuse", entity.get(ShadedColor.class).getDiffuse());
-            spatial.setMaterial(mat);
-        }));
 
-        unshadedEntities.applyChanges();
-        unshadedEntities.getAddedEntities().forEach(entity -> find(entity).forEach(spatial -> {
-            Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-            spatial.setMaterial(mat);
-        }));
-        unshadedEntities.getChangedEntities().forEach(entity -> find(entity).forEach(spatial -> {
-            Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-            mat.setColor("Color", entity.get(UnshadedColor.class).getColor());
-            spatial.setMaterial(mat);
-        }));
-
-        locatedEntities.applyChanges();
-        locatedEntities.getAddedEntities().forEach(entity -> find(entity).forEach(spatial ->
-                spatial.setLocalTranslation(entity.get(ViewLocation.class).getLocation())));
-        locatedEntities.getChangedEntities().forEach(entity -> find(entity).forEach(spatial ->
-                spatial.setLocalTranslation(entity.get(ViewLocation.class).getLocation())));
-
-        rotatedEntities.applyChanges();
-        rotatedEntities.getAddedEntities().forEach(entity -> find(entity).forEach(spatial ->
-                spatial.setLocalRotation(entity.get(ViewRotation.class).getRotation())));
-        rotatedEntities.getChangedEntities().forEach(entity -> find(entity).forEach(spatial ->
-                spatial.setLocalRotation(entity.get(ViewRotation.class).getRotation())));
-*/
         shadedEntities.applyChanges();
         match(containers, shadedEntities.getAddedEntities(),
                 ((entity, spatial) -> ShapeViewState.applyShadedMat(entity, spatial, assetManager)));
@@ -134,8 +96,6 @@ public final class ShapeViewState extends BaseAppState {
         rotatedEntities.applyChanges();
         match(containers, rotatedEntities.getAddedEntities(), ShapeViewState::applyViewRotation);
         match(containers, rotatedEntities.getChangedEntities(), ShapeViewState::applyViewRotation);
-
-
     }
 
     private static void applyShadedMat(Entity entity, Spatial spatial, AssetManager assetManager){
@@ -170,8 +130,4 @@ public final class ShapeViewState extends BaseAppState {
         entities.forEach(entity -> containers.stream().map(c -> c.getObject(entity.getId())).filter(
                                 c -> c != null).forEach(spatial -> consumer.accept(entity, spatial)));
     }
-
-    /*private Stream<Spatial> find(Entity entity){
-        return containers.stream().map(c -> c.getObject(entity.getId())).filter(c -> c != null);
-    }*/
 }
