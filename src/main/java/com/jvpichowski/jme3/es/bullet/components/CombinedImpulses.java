@@ -24,6 +24,13 @@ public final class CombinedImpulses implements EntityComponent {
         impulses[impulses.length-1] = new ImpulseDefinition(impulse, relativeLocation);
     }
 
+    /**
+     * Non of the parameters are allowed to be null
+     *
+     * @param impulse
+     * @param relativeLocation
+     * @return
+     */
     public CombinedImpulses addImpulse(Vector3f impulse, Vector3f relativeLocation){
         return new CombinedImpulses(impulses, impulse, relativeLocation);
     }
