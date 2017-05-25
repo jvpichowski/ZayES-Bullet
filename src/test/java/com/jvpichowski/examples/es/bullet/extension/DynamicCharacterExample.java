@@ -163,28 +163,19 @@ public class DynamicCharacterExample extends SimpleApplication {
         @Override
         public void update() {
             //update the character state based on the needed components
+            //first collect some necessary information
             boolean shouldJump = get(JumpState.class).shouldJump();
             set(new JumpState(false));
             int jumpCount = get(JumpCount.class).getJumpNumber();
             boolean onGround = false;
-
-            BulletSystem bulletSystem = getStateManager().getState(ESBulletState.class).getBulletSystem();
+            Vector3f velocity = get(LinearVelocity.class).getVelocity();
             PhysicsPosition pos = get(PhysicsPosition.class);
+
+            //the most important part is the ray system which keeps the capsule floating
+            //in the air over the ground
+            BulletSystem bulletSystem = getStateManager().getState(ESBulletState.class).getBulletSystem();
             List<PhysicsRayTestResult> rayTestResultList = bulletSystem.getPhysicsSpace()
                     .rayTest(pos.getLocation(), pos.getLocation().add(0,-50,0));
-
-            Vector3f velocity = get(LinearVelocity.class).getVelocity();
-            /*Vector3f warpVelo = velocity.clone();
-            boolean doWarpVelo = false;
-            //stop character if its speed is too slow
-            /*if(velocity.x < 0.01 && velocity.x > -0.01){
-                warpVelo.x = 0;
-                doWarpVelo = true;
-            }
-            if(velocity.z < 0.01 && velocity.z > -0.01){
-                warpVelo.z = 0;
-                doWarpVelo = true;
-            }*/
             if(rayTestResultList.size() > 0){
                 float len = 60;
                 for (PhysicsRayTestResult physicsRayTestResult : rayTestResultList) {
@@ -192,14 +183,11 @@ public class DynamicCharacterExample extends SimpleApplication {
                         len = physicsRayTestResult.getHitFraction()*50;
                     }
                 }
-                //if the character is near the ground or below it push it to the ground.
-                if(len < CHARACTER_STEP_HEIGHT + CHARACTER_BODY_HEIGHT/2){
+                //if the character is near the ground or below it push it to the min step height.
+                if(len <= CHARACTER_STEP_HEIGHT + CHARACTER_BODY_HEIGHT/2){
                     float diff = CHARACTER_STEP_HEIGHT + CHARACTER_BODY_HEIGHT/2-len;
                     set(new WarpPosition(pos.getLocation().add(0, diff,  0), pos.getRotation()));
                     if(velocity.y < 0) {
-                        /*warpVelo.y = 0;
-                        doWarpVelo = true;
-                        */
                         set(new WarpVelocity(velocity.clone().setY(0), Vector3f.ZERO));
                     }
                     onGround = true;
@@ -207,11 +195,9 @@ public class DynamicCharacterExample extends SimpleApplication {
                     jumpCount = 0;
                 }
             }
-            /*if(doWarpVelo){
-                set(new WarpVelocity(warpVelo, Vector3f.ZERO)); //set to ZERO because we don't have angular velocity
-            }*/
-            //apply jump
+
             Vector3f impulse = new Vector3f();
+            //apply jump
             if(shouldJump && (onGround || jumpCount < MAX_JUMP_NUMBER)){
                 set(new JumpCount(jumpCount+1));
                 impulse.addLocal(new Vector3f(0, CHARACTER_MASS*CHARACTER_JUMP_SPEED, 0));
@@ -228,11 +214,8 @@ public class DynamicCharacterExample extends SimpleApplication {
                 }
                 impulse.addLocal(slowDownImpulse);
             }
-
-            if(!impulse.equals(Vector3f.ZERO)) {
-                //TODO use combined impulse
-                set(new Impulse(impulse, new Vector3f()));
-            }
+            //TODO use combined impulse
+            set(new Impulse(impulse, new Vector3f()));
         }
     }
 
