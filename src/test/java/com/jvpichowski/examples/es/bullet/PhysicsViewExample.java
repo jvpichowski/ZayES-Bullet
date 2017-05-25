@@ -11,7 +11,6 @@ import com.jvpichowski.jme3.es.bullet.extension.view.PhysicsToViewLocation;
 import com.jvpichowski.jme3.es.bullet.extension.view.PhysicsToViewRotation;
 import com.jvpichowski.jme3.states.ESBulletState;
 import com.jvpichowski.jme3.states.SimpleLogicManagerState;
-import com.jvpichowski.jme3.states.debug.DebugArrowDrawer;
 import com.jvpichowski.jme3.states.view.*;
 import com.simsilica.es.EntityData;
 import com.simsilica.es.EntityId;
@@ -36,8 +35,7 @@ public class PhysicsViewExample extends SimpleApplication {
                 new FlyCamAppState(),
                 new ESBulletState(entityData),
                 new SimpleLogicManagerState(entityData),
-                new ShapeViewState(entityData, sceneRoot),
-                new DebugArrowDrawer()
+                new ShapeViewState(entityData, sceneRoot)
         );
         this.sceneRoot = sceneRoot;
         this.entityData = entityData;
