@@ -2,61 +2,34 @@ package com.jvpichowski.examples.es.bullet.extension;
 
 import com.jme3.app.FlyCamAppState;
 import com.jme3.app.SimpleApplication;
-import com.jme3.bullet.collision.PhysicsRayTestResult;
-import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.light.DirectionalLight;
 import com.jme3.math.*;
 import com.jme3.scene.Node;
-import com.jvpichowski.jme3.es.bullet.BulletSystem;
 import com.jvpichowski.jme3.es.bullet.components.*;
-import com.jvpichowski.jme3.es.bullet.extension.forces.SimpleDrag;
-import com.jvpichowski.jme3.es.bullet.extension.forces.SimpleDragForceLogic;
+import com.jvpichowski.jme3.es.bullet.extension.character.PhysicsCharacter;
+import com.jvpichowski.jme3.es.bullet.extension.character.PhysicsCharacterLogic;
+import com.jvpichowski.jme3.es.bullet.extension.character.PhysicsCharacterMovement;
+import com.jvpichowski.jme3.es.bullet.extension.character.PhysicsCharacterState;
 import com.jvpichowski.jme3.es.bullet.extension.logic.PhysicsSimpleLogicManager;
 import com.jvpichowski.jme3.es.bullet.extension.view.PhysicsToViewLocation;
 import com.jvpichowski.jme3.es.bullet.extension.view.PhysicsToViewRotation;
-import com.jvpichowski.jme3.es.logic.BaseSimpleEntityLogic;
 import com.jvpichowski.jme3.states.ESBulletState;
 import com.jvpichowski.jme3.states.SimpleLogicManagerState;
 import com.jvpichowski.jme3.states.view.BoxView;
 import com.jvpichowski.jme3.states.view.CapsuleView;
 import com.jvpichowski.jme3.states.view.ShapeViewState;
 import com.jvpichowski.jme3.states.view.UnshadedColor;
-import com.simsilica.es.EntityComponent;
 import com.simsilica.es.EntityData;
 import com.simsilica.es.EntityId;
 import com.simsilica.es.base.DefaultEntityData;
 
-import java.util.List;
-
 /**
- * A simple character demo with lots of features. Test it yourself and enhance it.
- * I would be glade to see your improvements.
+ *
  */
 public class DynamicCharacterExample extends SimpleApplication {
-
-    private static final int MAX_JUMP_NUMBER = 2; //Double JumpState, 3 = Triple JumpState, 1 = normal jump, 0 = no jumping
-    private static final float MAX_MOVE_SPEED = 5f; //m/s
-    private static final float MOVE_ACCELERATION = 2; //m/s^2
-    private static final float CHARACTER_STEP_HEIGHT = 0.2f; // the height of steps that this character can climb
-    private static final float CHARACTER_RADIUS = 0.3f;
-    private static final float CHARACTER_HEIGHT = 1.8f; // the whole height of the character
-    private static final float CHARACTER_MASS = 80f;
-    private static final float CHARACTER_JUMP_HEIGHT = 0.8f; // the max jump height a character can reach with a single jump
-
-    //the speed which is needed to throw the character to the jump height in the air
-    //Epot = Ekin; m*g*h = 1/2mv^2 -> v = sqrt(2gh)
-    private static final float CHARACTER_JUMP_SPEED = FastMath.sqrt(2*9.81f*CHARACTER_JUMP_HEIGHT);//m/s
-    //the height of the collision capsule without the round edges
-    private static final float CHARACTER_CAPSULE_HEIGHT = CHARACTER_HEIGHT-2*CHARACTER_RADIUS-CHARACTER_STEP_HEIGHT;
-    //the height og the whole collision capsule
-    private static final float CHARACTER_BODY_HEIGHT = CHARACTER_CAPSULE_HEIGHT+2*CHARACTER_RADIUS;
-    //TODO drag only for horizontal movement on ground
-    //the factor which forces the character to keep the maximum speed
-    //ma = mfv^2 f = a/v^2
-    private static final float DRAG_FACTOR = CHARACTER_MASS*MOVE_ACCELERATION/(MAX_MOVE_SPEED*MAX_MOVE_SPEED);
 
     public static void main(String[] args) {
         EntityData entityData = new DefaultEntityData();
@@ -66,18 +39,18 @@ public class DynamicCharacterExample extends SimpleApplication {
 
     private final EntityData entityData;
     private final Node root;
+    private EntityId character;
 
-    public DynamicCharacterExample(EntityData entityData, Node node){
+    public DynamicCharacterExample(EntityData entityData, Node root){
         super(new FlyCamAppState(),
-                new ShapeViewState(entityData, node),
+                //this is needed for the view
+                new ShapeViewState(entityData, root),
                 new ESBulletState(entityData),
+                //this is needed to convert the physics position to the view position
                 new SimpleLogicManagerState(entityData));
         this.entityData = entityData;
-        this.root = node;
+        this.root = root;
     }
-
-    //the character id
-    private EntityId character;
 
     @Override
     public void simpleInitApp() {
@@ -86,37 +59,29 @@ public class DynamicCharacterExample extends SimpleApplication {
         sun.setDirection(new Vector3f(1,-0.5f,-2).normalizeLocal());
         sun.setColor(ColorRGBA.White);
         getRootNode().addLight(sun);
-
+        //add scripts which convert the physics positions to view positions
+        //the scripts are executed on the render thread
         SimpleLogicManagerState logicManager = getStateManager().getState(SimpleLogicManagerState.class);
         logicManager.attach(new PhysicsToViewRotation.Logic());
         logicManager.attach(new PhysicsToViewLocation.Logic());
 
         ESBulletState esBulletState = stateManager.getState(ESBulletState.class);
         esBulletState.onInitialize(() -> {
-            //we need to register the move force otherwise the force system wouldn't apply it
-            esBulletState.getBulletSystem().getForceSystem().registerForce(MoveForce.class);
-
-            //we need a logic manager for advanced logic scripts
+            //add a logic manager for scripts which should be executed on the physics thread
             PhysicsSimpleLogicManager physicsLogicManager = new PhysicsSimpleLogicManager();
             physicsLogicManager.initialize(entityData, esBulletState.getBulletSystem());
-            //don't forget to destroy the logic manager in a real application
+            //in a real application don't forget to destroy it after usage:
             //physicsLogicManager.destroy();
 
-            //the simple physics logic manager supports execution of logic scripts before and
-            //after the physics update. We need the drag force to be executed before because it is a force.
-            physicsLogicManager.getPreTickLogicManager().attach(new CharacterLogic());
-            SimpleDragForceLogic sdfl = new SimpleDragForceLogic();
-            sdfl.initLogic(esBulletState.getBulletSystem());
-            physicsLogicManager.getPreTickLogicManager().attach(sdfl);
+            // add the character logic
+            PhysicsCharacterLogic characterLogic = new PhysicsCharacterLogic();
+            characterLogic.initLogic(physicsLogicManager.getPreTickLogicManager(), esBulletState.getBulletSystem());
+            physicsLogicManager.getPreTickLogicManager().attach(characterLogic);
 
-            //create a simple level
             createLevel();
             createCharacter();
-
-            //create some controls
             initInput();
-
-        });//End of onInitialize
+        });
     }
 
     private void initInput(){
@@ -134,152 +99,18 @@ public class DynamicCharacterExample extends SimpleApplication {
                     case "UP": movement.setY(-1); break;
                     case "DOWN": movement.setY(+1); break;
                 }
-                movement.multLocal(CHARACTER_MASS*MOVE_ACCELERATION);
             }
-            entityData.setComponent(character,  new MoveForce(movement));
+            entityData.setComponent(character,  new PhysicsCharacterMovement(movement));
         }, "LEFT", "RIGHT", "UP", "DOWN");
-        getInputManager().addListener((ActionListener) (name, isPressed, tpf) -> {
-            if(isPressed) entityData.setComponent(character, new JumpState(true));
-        }, "JUMP");
+        getInputManager().addListener((ActionListener) (name, isPressed, tpf) ->
+                entityData.setComponent(character, new PhysicsCharacterState(isPressed, false)
+        ), "JUMP");
     }
-
-    //------------------------------------------------------------------------------------------//
-    // logic definition                                                                         //
-    //------------------------------------------------------------------------------------------//
-
-    //the main character logic as script
-    private class CharacterLogic extends BaseSimpleEntityLogic {
-
-        @Override
-        public void registerComponents() {
-            //register the needed components for a character
-            dependsOn(
-                    PhysicsCharacter.class, PhysicsPosition.class,
-                    LinearVelocity.class, AngularVelocity.class,
-                    JumpCount.class, JumpState.class, MoveForce.class
-            );
-        }
-
-        @Override
-        public void update() {
-            //update the character state based on the needed components
-            //first collect some necessary information
-            boolean shouldJump = get(JumpState.class).shouldJump();
-            set(new JumpState(false));
-            int jumpCount = get(JumpCount.class).getJumpNumber();
-            boolean onGround = false;
-            Vector3f velocity = get(LinearVelocity.class).getVelocity();
-            PhysicsPosition pos = get(PhysicsPosition.class);
-
-            //the most important part is the ray system which keeps the capsule floating
-            //in the air over the ground
-            BulletSystem bulletSystem = getStateManager().getState(ESBulletState.class).getBulletSystem();
-            List<PhysicsRayTestResult> rayTestResultList = bulletSystem.getPhysicsSpace()
-                    .rayTest(pos.getLocation(), pos.getLocation().add(0,-50,0));
-            if(rayTestResultList.size() > 0){
-                float len = 60;
-                for (PhysicsRayTestResult physicsRayTestResult : rayTestResultList) {
-                    if(physicsRayTestResult.getHitFraction()*50 < len){
-                        len = physicsRayTestResult.getHitFraction()*50;
-                    }
-                }
-                //if the character is near the ground or below it push it to the min step height.
-                if(len <= CHARACTER_STEP_HEIGHT + CHARACTER_BODY_HEIGHT/2){
-                    float diff = CHARACTER_STEP_HEIGHT + CHARACTER_BODY_HEIGHT/2-len;
-                    set(new WarpPosition(pos.getLocation().add(0, diff,  0), pos.getRotation()));
-                    if(velocity.y < 0) {
-                        set(new WarpVelocity(velocity.clone().setY(0), Vector3f.ZERO));
-                    }
-                    onGround = true;
-                    set(new JumpCount(0));
-                    jumpCount = 0;
-                }
-            }
-
-            Vector3f impulse = new Vector3f();
-            //apply jump
-            if(shouldJump && (onGround || jumpCount < MAX_JUMP_NUMBER)){
-                set(new JumpCount(jumpCount+1));
-                impulse.addLocal(new Vector3f(0, CHARACTER_MASS*CHARACTER_JUMP_SPEED, 0));
-            }
-            //slow the character down if no movement is applied
-            if(onGround){
-                Vector3f slowDownImpulse = new Vector3f();
-                Vector3f move = get(MoveForce.class).getForce();
-                if(FastMath.approximateEquals(move.x, 0)){
-                    slowDownImpulse.setX(-velocity.x*CHARACTER_MASS*0.05f);
-                }
-                if(FastMath.approximateEquals(move.z, 0)){
-                    slowDownImpulse.setZ(-velocity.z*CHARACTER_MASS*0.05f);
-                }
-                impulse.addLocal(slowDownImpulse);
-            }
-            //TODO use combined impulse
-            set(new Impulse(impulse, new Vector3f()));
-        }
-    }
-
-    //--------------------------------------------------------------------------------------//
-    // data type definition                                                                 //
-    //--------------------------------------------------------------------------------------//
-
-
-    //a simple flag component to mark the character
-    private final class PhysicsCharacter implements EntityComponent {}
-
-    //obtain the jump number with this component
-    private final class JumpCount implements EntityComponent {
-
-        private final int jumpNumber;
-
-        public JumpCount(int jumpNumber) {
-            this.jumpNumber = jumpNumber;
-        }
-
-        public int getJumpNumber() {
-            return jumpNumber;
-        }
-    }
-
-    //change this component to jump
-    private final class JumpState implements EntityComponent {
-
-        private final boolean shouldJump;
-
-        public JumpState(boolean shouldJump) {
-            this.shouldJump = shouldJump;
-        }
-
-        public JumpState() {
-            this(false);
-        }
-
-        public boolean shouldJump() {
-            return shouldJump;
-        }
-    }
-
-    //a simple force which moves the character horizontal
-    private final class MoveForce implements ForceComponent {
-
-        private final Vector3f force;
-
-        public MoveForce(Vector2f move) {
-            this.force = new Vector3f(move.x, 0, move.y);
-        }
-
-        @Override
-        public Vector3f getForce() { return force; }
-
-        @Override
-        public Vector3f getLocation() { return null; }
-    }
-
-    //---------------------------------------------------------------------------------------//
-    // data definition                                                                       //
-    //---------------------------------------------------------------------------------------//
 
     private void createCharacter(){
+        float CHARACTER_RADIUS = 0.3f;
+        float CHARACTER_HEIGHT = 1.8f;
+        float CHARACTER_STEP_HEIGHT = 0.5f;
         character = entityData.createEntity();
         entityData.setComponents(character,
                 //some view stuff
@@ -288,19 +119,8 @@ public class DynamicCharacterExample extends SimpleApplication {
                 new UnshadedColor(ColorRGBA.Red),
                 new CapsuleView(CHARACTER_RADIUS, CHARACTER_HEIGHT-2*CHARACTER_RADIUS),
                 //basic properties of the capsule
-                new Friction(0),
-                new Factor(new Vector3f(1,1,1), new Vector3f(0,0,0)),
-                new RigidBody(false, CHARACTER_MASS),
-                new CustomShape(new CapsuleCollisionShape(CHARACTER_RADIUS, CHARACTER_CAPSULE_HEIGHT)),
-                //base character definition
-                new PhysicsCharacter(),
-                //drag force for max speed
-                new SimpleDrag(DRAG_FACTOR),
-                //jump system
-                new JumpState(false),
-                new JumpCount(0),
-                //initial zero move force
-                new MoveForce(new Vector2f()),
+                new PhysicsCharacter(CHARACTER_RADIUS, CHARACTER_HEIGHT, 80,
+                        5,2, 0.2f, 0.5f, 2),
                 new WarpPosition(new Vector3f(0, 5, 0), new Quaternion()));
     }
 
