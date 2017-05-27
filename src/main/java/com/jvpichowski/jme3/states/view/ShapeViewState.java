@@ -16,7 +16,7 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 
 /**
- *
+ * Must be attached before ESBulletState
  */
 public final class ShapeViewState extends BaseAppState {
 
