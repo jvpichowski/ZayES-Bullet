@@ -83,10 +83,6 @@ public class ForceFieldExample extends SimpleApplication {
             //in a real application don't forget to destroy it after usage:
             //physicsLogicManager.destroy();
 
-            // add the character logic
-            PhysicsCharacterLogic characterLogic = new PhysicsCharacterLogic();
-            characterLogic.initLogic(physicsLogicManager.getPreTickLogicManager(), esBulletState.getBulletSystem());
-            physicsLogicManager.getPreTickLogicManager().attach(characterLogic);
             ForceFieldLogic forceFieldLogic = new ForceFieldLogic();
             forceFieldLogic.initLogic(entityData, esBulletState.getBulletSystem(),
                     physicsLogicManager.getPreTickLogicManager(),
