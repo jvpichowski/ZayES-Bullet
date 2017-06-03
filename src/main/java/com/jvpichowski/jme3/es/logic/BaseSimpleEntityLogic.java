@@ -46,6 +46,13 @@ public abstract class BaseSimpleEntityLogic {
     }
 
     /**
+     * Is called before the per entity logic is updated
+     */
+    public void updateLogic() {
+
+    }
+
+    /**
      * Only call once in registerComponents(). Only the last call will be used.
      * @param components the components this logic depends on
      */

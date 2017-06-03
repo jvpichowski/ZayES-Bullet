@@ -20,6 +20,7 @@ public final class SimpleLogicManager {
 
     public void update() {
         logics.forEach((logic, entities) -> {
+            logic.updateLogic();
             entities.applyChanges();
             //first check the removed entities because they could be readded in the same tick
             entities.getRemovedEntities().forEach(logic::onRemove);
