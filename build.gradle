@@ -14,8 +14,8 @@ def bintrayKey = ''
 def projectDesc = 'Contains bindings to native Bullet for ZayES'
 def projectName = name
 
-def versionDesc= 'This release conatins the basic functionalities and hooks for extending this library.'
-def projectVersion = '0.2.0'
+def versionDesc= 'This release conatins the stable base a new logic module and multiple extensions.'
+def projectVersion = '0.5.0'
 
 
 mainClassName='com.jvpichowski.jme3.examples.Main'
@@ -132,15 +132,15 @@ bintray {
         name = projectName
         //userOrg = 'jvpichowski' //An optional organization name when the repo belongs to one of the user's orgs
         desc = projectDesc
-        websiteUrl = 'https://github.com/jvpichowski/jME3BulletES'
-        issueTrackerUrl = 'https://github.com/jvpichowski/jME3BulletES/issues'
-        vcsUrl = 'https://github.com/jvpichowski/jME3BulletES.git'
+        websiteUrl = 'https://github.com/jvpichowski/ZayES-Bullet'
+        issueTrackerUrl = 'https://github.com/jvpichowski/ZayES-Bullet/issues'
+        vcsUrl = 'https://github.com/jvpichowski/ZayES-Bullet.git'
         licenses = ['BSD 3-Clause']
         labels = ['jME3', 'Bullet', 'ZayES']
         publicDownloadNumbers = false
         //attributes= ['a': ['ay1', 'ay2'], 'b': ['bee'], c: 'cee'] //Optional package-level attributes
 
-        githubRepo = 'jvpichowski/jME3BulletES' //Optional Github repository
+        githubRepo = 'jvpichowski/ZayES-Bullet' //Optional Github repository
         //githubReleaseNotesFile = 'README.md' //Optional Github readme file
 
         //Optional version descriptor
