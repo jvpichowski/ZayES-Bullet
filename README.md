@@ -13,10 +13,45 @@ notice the most important aspects.
 
 ## Adding ZayEs-Bullet to your project
 
-ZayES-Bullet is released on jcenter. Just add the dependency definition
+ZayES-Bullet is released on bintray. Just add the dependency definition
 to your build file or download directly the needed jars. There are
 javadoc and sources available. 
-([Direct link to jcenter](https://bintray.com/jvpichowski/jME3-Tools/ZayES-Bullet))
+([Direct link to Bintray](https://bintray.com/jvpichowski/jME3-Tools/ZayES-Bullet))
+
+Or you could use 'jitpack.io'. Just use this example 'build.gradle' file:
+
+```
+group 'com.jvpichowski'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+repositories {
+    jcenter()
+    maven { url 'https://jitpack.io' }
+}
+
+ext.jmeVersion = '3.1.0-stable'
+
+dependencies {
+
+    compile "org.jmonkeyengine:jme3-core:$jmeVersion"
+    compile "org.jmonkeyengine:jme3-desktop:$jmeVersion"
+    compile "org.jmonkeyengine:jme3-lwjgl:$jmeVersion"
+
+    compile "org.jmonkeyengine:jme3-bullet-native:$jmeVersion"
+    compile "org.jmonkeyengine:jme3-bullet:$jmeVersion"
+
+    compile 'com.simsilica:sio2:1.0.3'
+    compile 'com.simsilica:zay-es:1.2.1'
+
+    compile 'com.github.jvpichowski:ZayES-Bullet:master-SNAPSHOT'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+```
 
 ## Architecture
 
