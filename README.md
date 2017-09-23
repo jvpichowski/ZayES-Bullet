@@ -17,8 +17,12 @@ ZayES-Bullet is released on bintray. Just add the dependency definition
 to your build file or download directly the needed jars. There are
 javadoc and sources available. 
 ([Direct link to Bintray](https://bintray.com/jvpichowski/jME3-Tools/ZayES-Bullet))
+Don't forget to add the needed bintray repository to your repositories:
+```
+maven { url "https://dl.bintray.com/jvpichowski/jME3-Tools/" }
+```
 
-Or you could use 'jitpack.io'. Just use this example 'build.gradle' file:
+Or you could use 'jitpack.io' to fetch the latest changes (They may be breaking changes). Just use this example 'build.gradle' file:
 
 ```
 group 'com.jvpichowski'
